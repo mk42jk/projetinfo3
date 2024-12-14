@@ -1,9 +1,9 @@
 #!/bin/bash
 
 print_help(){
-     echo "Help function executed."
+     echo "Fonction d'aide exécutée."
      echo "Options:" #une ligne pour chaque fonction en c
-     echo "  -h   Show this help message and exit."
+     echo "  -h   Affichage de l'aide et quitter la page."
 }
 
 temps_execution () {
