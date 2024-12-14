@@ -65,7 +65,7 @@ validation_arguments() {
             exit 1 #code d'erreur 1 pour la fonction validation_arguments
         fi
         ;;
-    *)
+    *)# pour le cas ou l'argument est mal écris 
         echo "Erreur : Type de consommateur invalide '$type_de_consommateur'. Il doit être 'comp', 'indiv', ou 'all'."
         exit 1 #code d'erreur 1 pour la fonction validation_arguments
         ;;
