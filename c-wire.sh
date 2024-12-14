@@ -29,15 +29,49 @@ validation_arguments() {
      fi
 
      #Initialisation du nom des arguments
-     local Fichier_donnees
+     local fichier_donnees=$1
+     local type_de_station=$2
+     local type_de_consommateur=$3
+     local ID_Centrale=${4:-}
 
+     # Validation de l'argument 1 (Fichier_donnees)
+     if [[ ! -f "$fichier_donnees" ]]; then
+        echo "Erreur: Le fichier de donnes '$fichier_donnees' n'existe pas, n'est pas un fichier, ou n'est pas accessible."
+        exit 1 #code d'erreur 1 pour la fonction validation_arguments
+    fi
 
+     # Validation de l'argument 2 (Type_de_station)
+    case "$type_de_station" in 
+         hvb|hva|lv)
+            ;;
+        *)
+            echo "Erreur: Station Invalide '$type_de_station'. veuillez écrire 'hvb', 'hva', ou 'lv'."
+            exit 1 #code d'erreur 1 pour la fonction validation_arguments
+            ;;
+    esac
 
+     # Validation de l'argument 3 (Type_de_consommateur)
+    case "$type_de_consommateur" in
+    comp|indiv|all)
+        # Vérifie s'il y a eu des combinaisons mal faite
+        # hvb_all ou hvb_indiv pas possible
+        if [[ "$type_de_station" == "hvb" && ( "$type_de_consommateur" == "all" || "$type_de_consommateur" == "indiv" ) ]]; then
+            echo "Erreur : Le type de consommateur '$type_de_consommateur' n'est pas autorisé pour le type de station 'hvb'."
+            exit 1 #code d'erreur 1 pour la fonction validation_arguments
+        fi
+        #hva_all ou hva_indiv pas possible également
+        if [[ "$type_de_station" == "hva" && ( "$type_de_consommateur" == "all" || "$type_de_consommateur" == "indiv" ) ]]; then
+            echo "Erreur : Le type de consommateur '$type_de_consommateur' n'est pas autorisé pour le type de station 'hva'."
+            exit 1 #code d'erreur 1 pour la fonction validation_arguments
+        fi
+        ;;
+    *)
+        echo "Erreur : Type de consommateur invalide '$type_de_consommateur'. Il doit être 'comp', 'indiv', ou 'all'."
+        exit 1 #code d'erreur 1 pour la fonction validation_arguments
+        ;;
+esac
 
-
-
-
-
+}
 
 
 temps_execution () {
@@ -54,6 +88,16 @@ temps_execution () {
     echo "Temps d'exécution total : $execution_temps secondes."
     exit 0
 }
+
+
+main() {
+    validation_arguments "$@" #On vérifie d'abord les arguments avant de lancer le script
+    echo "Tout les arguments sont valide! Lançons le script !"
+    #Reste de la fonction à finir
+}
+
+#Point d'entrée dans le script 
+main "$@"
 
 
     
