@@ -24,12 +24,12 @@ validation_arguments() {
 
      #Vérification du nombre d'arguments (4 minimum, 6 maximum)
      if [[ $# -lt 3 ]]; then #Nombre d'Arguments strictement inférieurs à 3
-          echo "Erreur: Nombre d'arguments insuffisants."
+          echo "Erreur: Nombre d'arguments insuffisants. (minimum 3 requis)"
           affiche_aide
      fi
 
      if [[ $# -gt 6 ]]; then
-          echo "Erreur: Nombre d'arguments trop élevées."
+          echo "Erreur: Nombre d'arguments trop élevées. (maximum 6 autorisés)."
           affiche_aide
      fi
      
@@ -63,13 +63,13 @@ validation_arguments() {
         # Vérifie s'il y a eu des combinaisons mal faite
         # hvb_all ou hvb_indiv pas possible
         if [[ "$type_de_station" == "hvb" && ( "$type_de_consommateur" == "all" || "$type_de_consommateur" == "indiv" ) ]]; then
-            echo "Erreur : Le type de consommateur '$type_de_consommateur' n'est pas autorisé pour le type de station 'hvb'."
+            echo "Erreur : Le type de consommateur 'all ou indiv' n'est pas autorisé pour le type de station 'hvb'."
             affiche_aide
             exit 3 #Argument invalide
         fi
         #hva_all ou hva_indiv pas possible également
         if [[ "$type_de_station" == "hva" && ( "$type_consommateur" == "all" || "$type_de_consommateur" == "indiv" ) ]]; then
-            echo "Erreur : Le type de consommateur '$type_de_consommateur' n'est pas autorisé pour le type de station 'hva'."
+            echo "Erreur : Le type de consommateur 'all ou indiv' n'est pas autorisé pour le type de station 'hva'."
             affiche_aide
             exit 3 #Argument invalide
         fi
@@ -108,6 +108,25 @@ preparer_dossiers() {
     echo "Les dossiers requis sont prêts."
 }
 
+# Vérifie et compile le programme C si besoin
+verifier_executable_c() {
+    local executable="codeC/c-wire"  # Chemin de l'exécutable
+    local source="codeC/main.c"      # Chemin du fichier source
+
+    if [[ ! -f "$executable" || "$executable" -ot "$source" ]]; then
+        echo "Compilation de l'exécutable C..."
+        pushd "codeC" > /dev/null
+        make
+        if [[ $? -ne 0 ]]; then
+            echo "Erreur : Échec de la compilation du programme C."
+            exit 5 # Code 5 : Erreur de compilation
+        fi
+        popd > /dev/null
+    fi
+    echo "Exécutable C vérifié et prêt."
+}
+
+
 # Fonction pour exécuter le traitement principal
 traitement_principal() {
     local fichier_donnees=$1
@@ -117,21 +136,16 @@ traitement_principal() {
 
     echo "Lancement du traitement principal..."
 
-    # Exemple : appel à l'exécutable C
-    local executable="codeC/c-wire" # Chemin vers l'exécutable C
-    if [[ ! -x "$executable" ]]; then
-        echo "Erreur : L'exécutable '$executable' est introuvable ou non exécutable."
-        exit 5 # Code 5 : Erreur de compilation ou absence de l'exécutable
-    fi
+     verifier_executable_c
 
-    # Construction des paramètres pour le programme C
+    # on prépare des paramètres pour le programme C
     local params="$fichier_donnees $type_de_station $type_de_consommateur"
     if [[ -n "$ID_centrale" ]]; then
         params="$params $ID_centrale"
     fi
 
     # Exécution de l'exécutable C
-    ./"$executable" $params
+    ./codeC/c-wire $params
     if [[ $? -ne 0 ]]; then
         echo "Erreur : Le programme C a rencontré une erreur."
         exit 6 # Code 6 : Erreur lors de l'exécution du programme C
