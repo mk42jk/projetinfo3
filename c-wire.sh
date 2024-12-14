@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Fonction pour l'affichage de l'aide
-Affiche_aide(){
+affiche_aide(){
      echo "Fonction d'aide exécutée."
      echo "L'utilisation: $0 <Fichier_Données> <Type_de_station> <type_de_consommateur> [ID_Centrale] [-h]"
      echo "Options:" #une ligne pour expliquer chaque argument 
@@ -10,7 +10,7 @@ Affiche_aide(){
      echo "type_de_consommateur: Type de consommateur (comp, indiv, all) (Obligatoire)"
      echo "ID_Centrale: Identifiant de la centrale (Optionnelle)"
      echo "  -h   Affichage de l'aide et quitter la page."
-     exit 0
+     exit 0 # 0 signifie succès
 }
 
 #Fonctions pour vérifier les arguments 
@@ -18,7 +18,7 @@ validation_arguments() {
      #Si -h est dans les arguments
      for arg in "$@"; do
           if [[ "$arg" == "-h" ]]; then
-               Affiche_aide
+               affiche_aide
           fi
      done
 
@@ -36,8 +36,9 @@ validation_arguments() {
 
      # Validation de l'argument 1 (Fichier_donnees)
      if [[ ! -f "$fichier_donnees" ]]; then
-        echo "Erreur: Le fichier de donnes '$fichier_donnees' n'existe pas, n'est pas un fichier, ou n'est pas accessible."
-        exit 1 #code d'erreur 1 pour la fonction validation_arguments
+        echo "Erreur: Le fichier de donnees '$fichier_donnees' n'existe pas, n'est pas un fichier, ou n'est pas accessible."
+        affiche_aide
+        exit 2 #code d'erreur 2 pour les fichier introuvable
     fi
 
      # Validation de l'argument 2 (Type_de_station)
@@ -46,7 +47,8 @@ validation_arguments() {
             ;;
         *)
             echo "Erreur: Station Invalide '$type_de_station'. veuillez écrire 'hvb', 'hva', ou 'lv'."
-            exit 1 #code d'erreur 1 pour la fonction validation_arguments
+            affiche_aide
+            exit 3 #Argument manquant ou invalide
             ;;
     esac
 
@@ -57,17 +59,20 @@ validation_arguments() {
         # hvb_all ou hvb_indiv pas possible
         if [[ "$type_de_station" == "hvb" && ( "$type_de_consommateur" == "all" || "$type_de_consommateur" == "indiv" ) ]]; then
             echo "Erreur : Le type de consommateur '$type_de_consommateur' n'est pas autorisé pour le type de station 'hvb'."
-            exit 1 #code d'erreur 1 pour la fonction validation_arguments
+            affiche_aide
+            exit 3 #Argument invalide
         fi
         #hva_all ou hva_indiv pas possible également
-        if [[ "$type_de_station" == "hva" && ( "$type_de_consommateur" == "all" || "$type_de_consommateur" == "indiv" ) ]]; then
+        if [[ "$type_de_station" == "hva" && ( "$type_consommateur" == "all" || "$type_de_consommateur" == "indiv" ) ]]; then
             echo "Erreur : Le type de consommateur '$type_de_consommateur' n'est pas autorisé pour le type de station 'hva'."
-            exit 1 #code d'erreur 1 pour la fonction validation_arguments
+            affiche_aide
+            exit 3 #Argument invalide
         fi
         ;;
     *)# pour le cas ou l'argument est mal écris 
         echo "Erreur : Type de consommateur invalide '$type_de_consommateur'. Il doit être 'comp', 'indiv', ou 'all'."
-        exit 1 #code d'erreur 1 pour la fonction validation_arguments
+        affiche_aide
+        exit 3 #Argument invalide
         ;;
 esac
 
@@ -98,6 +103,7 @@ main() {
 
 #Point d'entrée dans le script 
 main "$@"
+
 
 
     
