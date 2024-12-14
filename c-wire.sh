@@ -69,13 +69,38 @@ validation_arguments() {
             exit 3 #Argument invalide
         fi
         ;;
-    *)# pour le cas ou l'argument est mal écris 
+    *) # pour le cas ou l'argument est mal écris 
         echo "Erreur : Type de consommateur invalide '$type_de_consommateur'. Il doit être 'comp', 'indiv', ou 'all'."
         affiche_aide
         exit 3 #Argument invalide
         ;;
 esac
 
+}
+
+# Fonction pour vérifier et préparer les dossiers requis
+preparer_dossiers() {
+    # Vérification et création des dossiers
+    for dossier in "tmp" "graphs"; do
+        if [[ ! -d "$dossier" ]]; then
+            echo "Création du dossier '$dossier'..."
+            mkdir -p "$dossier"
+            if [[ $? -ne 0 ]]; then
+                echo "Erreur : Impossible de créer le dossier '$dossier'."
+                exit 4 # Code 4 : Erreur de permission pour la création de dossier
+            fi
+        else
+            if [[ "$dossier" == "tmp" ]]; then
+                echo "Nettoyage du dossier '$dossier'..."
+                rm -rf "$dossier"/*
+                if [[ $? -ne 0 ]]; then
+                    echo "Erreur : Impossible de nettoyer le dossier '$dossier'."
+                    exit 4 # Code 4 : Erreur de permissions pour le nettoyage du dossier
+                fi 
+            fi
+        fi
+    done
+    echo "Les dossiers requis sont prêts."
 }
 
 
