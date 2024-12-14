@@ -22,12 +22,17 @@ validation_arguments() {
           fi
      done
 
-     #Vérification du nombre d'arguments (4 minimum)
+     #Vérification du nombre d'arguments (4 minimum, 6 maximum)
      if [[ $# -lt 3 ]]; then #Nombre d'Arguments strictement inférieurs à 3
           echo "Erreur: Nombre d'arguments insuffisants."
           affiche_aide
      fi
 
+     if [[ $# -gt 6 ]]; then
+          echo "Erreur: Nombre d'arguments trop élevées."
+          affiche_aide
+     fi
+     
      #Initialisation du nom des arguments
      local fichier_donnees=$1
      local type_de_station=$2
