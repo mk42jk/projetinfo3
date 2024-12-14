@@ -103,6 +103,37 @@ preparer_dossiers() {
     echo "Les dossiers requis sont prêts."
 }
 
+# Fonction pour exécuter le traitement principal
+traitement_principal() {
+    local fichier_donnees=$1
+    local type_de_station=$2
+    local type_de_consommateur=$3
+    local ID_centrale=${4:-}
+
+    echo "Lancement du traitement principal..."
+
+    # Exemple : appel à l'exécutable C
+    local executable="codeC/c-wire" # Chemin vers l'exécutable C
+    if [[ ! -x "$executable" ]]; then
+        echo "Erreur : L'exécutable '$executable' est introuvable ou non exécutable."
+        exit 5 # Code 5 : Erreur de compilation ou absence de l'exécutable
+    fi
+
+    # Construction des paramètres pour le programme C
+    local params="$fichier_donnees $type_de_station $type_de_consommateur"
+    if [[ -n "$ID_centrale" ]]; then
+        params="$params $ID_centrale"
+    fi
+
+    # Exécution de l'exécutable C
+    ./"$executable" $params
+    if [[ $? -ne 0 ]]; then
+        echo "Erreur : Le programme C a rencontré une erreur."
+        exit 6 # Code 6 : Erreur lors de l'exécution du programme C
+    fi
+
+    echo "Traitement principal terminé avec succès."
+}
 
 temps_execution () {
     #Enregistre le temps au début de l'exécution
@@ -121,9 +152,10 @@ temps_execution () {
 
 
 main() {
-    validation_arguments "$@" #On vérifie d'abord les arguments avant de lancer le script
-    echo "Tout les arguments sont valide! Lançons le script !"
-    #Reste de la fonction à finir
+    validation_arguments "$@" # On vérifie d'abord les arguments avant de lancer le script
+    preparer_dossiers         # Préparation des dossiers requis
+    traitement_principal "$@" # Lancement du traitement principal
+    echo "Script terminé avec succès !"
 }
 
 #Point d'entrée dans le script 
