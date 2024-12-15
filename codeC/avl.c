@@ -2,7 +2,7 @@
 // Description : Implémentation des fonctions de gestion de l'arbre AVL
 // pour le stockage et la manipulation des données des stations
 
-#include "../include/avl.h"
+#include "avl.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
