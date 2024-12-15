@@ -23,17 +23,17 @@ bool est_noeud_valide(const NoeudAVL *noeud) {
     return noeud != NULL;
 }
 
-NoeudAVL* creer_noeud(int id_station, int capacite) {
+NoeudAVL* creer_noeud(int id_station, double capacite) {
     NoeudAVL* nouveau_noeud = (NoeudAVL*)malloc(sizeof(NoeudAVL));
     
     if (nouveau_noeud == NULL) {
-        fprintf(stderr, "Erreur : Échec de l'allocation mémoire pour un nouveau nœud\n");
+        printf("Erreur : Échec de l'allocation mémoire pour un nouveau nœud\n");
         return NULL;
     }
     
     nouveau_noeud->id_station = id_station;
     nouveau_noeud->capacite = capacite;
-    nouveau_noeud->consommation = 0;
+    nouveau_noeud->consommation = 0.0;
     nouveau_noeud->hauteur = 1;
     
     nouveau_noeud->gauche = NULL;
@@ -54,17 +54,17 @@ void liberer_avl(NoeudAVL *racine) {
 }
 
 int obtenir_hauteur(const NoeudAVL *noeud) {
-    if (!est_noeud_valide(noeud)) {
-        return 0;
+    if (est_noeud_valide(noeud)) {
+        return noeud->hauteur;
     }
-    return noeud->hauteur;
+    return 0;
 }
 
 int obtenir_equilibre(const NoeudAVL *noeud) {
-    if (!est_noeud_valide(noeud)) {
-        return 0;
+    if (est_noeud_valide(noeud)) {
+        return obtenir_hauteur(noeud->gauche) - obtenir_hauteur(noeud->droite);
     }
-    return obtenir_hauteur(noeud->gauche) - obtenir_hauteur(noeud->droite);
+    return 0;
 }
 
 NoeudAVL* rotation_droite(NoeudAVL *racine) {
@@ -101,7 +101,7 @@ NoeudAVL* rotation_gauche(NoeudAVL *racine) {
     return pivot;
 }
 
-NoeudAVL* inserer_noeud(NoeudAVL *racine, int id_station, int capacite) {
+NoeudAVL* inserer_noeud(NoeudAVL *racine, int id_station, double capacite) {
     if (!est_noeud_valide(racine)) {
         return creer_noeud(id_station, capacite);
     }
@@ -114,8 +114,7 @@ NoeudAVL* inserer_noeud(NoeudAVL *racine, int id_station, int capacite) {
         return racine;
     }
 
-    racine->hauteur = 1 + max(obtenir_hauteur(racine->gauche),
-                             obtenir_hauteur(racine->droite));
+    racine->hauteur = 1 + max(obtenir_hauteur(racine->gauche),obtenir_hauteur(racine->droite));
 
     int equilibre = obtenir_equilibre(racine);
 
@@ -155,43 +154,16 @@ NoeudAVL* chercher_noeud(NoeudAVL *racine, int id_station) {
     return chercher_noeud(racine->droite, id_station);
 }
 
-void maj_consommation(NoeudAVL *noeud, int consommation) {
-    if (noeud != NULL) {
+void maj_consommation(NoeudAVL *noeud, double consommation) {
+    if (est_noeud_valide(noeud)) {
         noeud->consommation += consommation;
     }
-}
-
-int obtenir_balance(const NoeudAVL *noeud) {
-    if (!est_noeud_valide(noeud)) {
-        return 0;
-    }
-    return obtenir_hauteur(noeud->gauche) - obtenir_hauteur(noeud->droite);
 }
 
 void maj_hauteur(NoeudAVL *noeud) {
     if (!est_noeud_valide(noeud)) {
         return;
     }
-    noeud->hauteur = 1 + max(obtenir_hauteur(noeud->gauche), 
-                            obtenir_hauteur(noeud->droite));
-}
-
-bool est_equilibre(const NoeudAVL *racine) {
-    if (!est_noeud_valide(racine)) {
-        return true;
-    }
-
-    int balance = obtenir_balance(racine);
-    return balance >= -1 && balance <= 1 && 
-           est_equilibre(racine->gauche) && 
-           est_equilibre(racine->droite);
-}
-
-double calculer_taux_charge(const NoeudAVL *noeud) {
-    if (noeud == NULL || noeud->capacite == 0) return 0.0;
-    return (double)noeud->consommation / noeud->capacite;
-}
-
-bool est_en_surcharge(const NoeudAVL *noeud) {
-    return noeud != NULL && noeud->consommation > noeud->capacite;
+    noeud->hauteur = max(obtenir_hauteur(noeud->gauche),
+                        obtenir_hauteur(noeud->droite)) + 1;
 }
