@@ -4,9 +4,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "../include/input.h"
-#include "../include/output.h"
-#include "../include/avl.h"
+#include "input.h"
+#include "output.h"
+#include "avl.h"
 
 int main(int argc, char* argv[]) {
     // Vérification des arguments de la ligne de commande
