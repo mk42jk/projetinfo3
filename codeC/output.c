@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../include/output.h"
+#include "output.h"
 
 void ecrire_donnees(FILE* f, const NoeudAVL* racine) {
     if (!f || !racine) return;
