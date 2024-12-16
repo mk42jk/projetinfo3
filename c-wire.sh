@@ -152,6 +152,13 @@ filtrer_donnees() {
     local ID_centrale="${4:-}"
     local fichier_filtre="tmp/filtered_data.csv"
 
+ # Validation de l'argument 1 (Fichier_donnees) (juste au cas ou on le remet ici)
+     if [[ ! -f "$fichier_donnees" ]]; then
+        echo "Erreur: Le fichier de donnees '$fichier_donnees' n'existe pas, n'est pas un fichier, ou n'est pas accessible."
+        affiche_aide
+        exit 2 #code d'erreur 2 pour les fichier introuvable
+    fi
+
     echo "Filtrage des données pour :"
     echo "  Type de station       : $type_station"
     echo "  Type de consommateur  : $type_consommateur"
