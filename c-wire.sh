@@ -230,16 +230,21 @@ traitement_principal() {
     local ID_centrale=${4:-}
 
     echo "Lancement du traitement principal..."
+    
+      # Filtrage des données avant d'exécuter le programme C
+    filtrer_donnees "$fichier_donnees" "$type_de_station" "$type_de_consommateur" "$ID_centrale"
 
      verifier_executable_c
 
     # on prépare des paramètres pour le programme C
-    local params="$fichier_donnees $type_de_station $type_de_consommateur"
+    local fichier_filtre="tmp/${type_de_station}_${type_de_consommateur}.csv"
+    local params="$fichier_filtre $type_de_station $type_de_consommateur"
     if [[ -n "$ID_centrale" ]]; then
         params="$params $ID_centrale"
     fi
 
     # Exécution de l'exécutable C
+      echo "Exécution du programme C pour le calcul des consommations..."
     ./codeC/c-wire $params
     if [[ $? -ne 0 ]]; then
         echo "Erreur : Le programme C a rencontré une erreur."
