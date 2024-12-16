@@ -126,6 +126,24 @@ verifier_executable_c() {
     echo "Exécutable C vérifié et prêt."
 }
 
+#Fonction pour vérifier la présence de gnuplot et l'installer le cas échéant
+ verifier_installer_gnuplot() {
+    if ! command -v gnuplot &> /dev/null; then
+        echo "gnuplot n'est pas installé. Téléchargement..."
+
+        # Vérifier le système d'exploitation et installer gnuplot en conséquence
+        if [ -x "$(command -v apt-get)" ]; then
+            # Pour les distributions basées sur Debian (Ubuntu, Mint, etc.)
+            sudo apt-get update
+            sudo apt-get install -y gnuplot
+
+        else
+            echo "installation manuelle requise"
+        fi
+    else
+        echo "gnuplot est déjà installer."
+    fi
+}
 
 # Fonction pour exécuter le traitement principal
 traitement_principal() {
