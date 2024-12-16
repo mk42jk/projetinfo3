@@ -133,7 +133,7 @@ verifier_executable_c() {
 
         # Vérifier le système d'exploitation et installer gnuplot en conséquence
         if [ -x "$(command -v apt-get)" ]; then
-            # Pour les distributions basées sur Debian (Ubuntu, Mint, etc.)
+        
             sudo apt-get update
             sudo apt-get install -y gnuplot
 
