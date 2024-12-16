@@ -145,6 +145,70 @@ verifier_executable_c() {
     fi
 }
 
+filtrer_donnees() {
+    local fichier_donnees="$1"
+    local type_station="$2"
+    local type_consommateur="$3"
+    local ID_centrale="${4:-}"
+    local fichier_filtre="tmp/filtered_data.csv"
+
+    echo "Filtrage des données pour :"
+    echo "  Type de station       : $type_station"
+    echo "  Type de consommateur  : $type_consommateur"
+    echo "  ID de centrale        : ${ID_centrale:-Aucun}"
+
+    # Colonnes de filtrage
+    local colonne_station colonne_consommateur
+    case "$type_station" in
+        hvb) colonne_station=2 ;;
+        hva) colonne_station=3 ;;
+        lv)  colonne_station=4 ;;
+        *) 
+            echo "Erreur : Type de station inconnu '$type_station'."
+            exit 3
+            ;;
+    esac
+
+    case "$type_consommateur" in
+        comp) colonne_consommateur=5 ;;
+        indiv) colonne_consommateur=6 ;;
+        all) colonne_consommateur="5,6" ;; # Toutes les colonnes consommateurs
+        *)
+            echo "Erreur : Type de consommateur inconnu '$type_consommateur'."
+            exit 3
+            ;;
+    esac
+
+    #  commande de filtrage
+    local filtre=""
+
+    # Filtrer par type de station
+    filtre+="\$$colonne_station != \"-\""
+
+    # Filtrer par ID de centrale (si il est fourni)
+    if [[ -n "$ID_centrale" ]]; then
+        filtre+=" && \$1 == \"$ID_centrale\""
+    fi
+
+    # Filtrer par type de consommateur
+    if [[ "$type_consommateur" != "all" ]]; then
+        filtre+=" && \$$colonne_consommateur != \"-\""
+    fi
+
+    # Exécution du filtrage avec awk
+    awk -F';' "BEGIN {OFS=\":\"} $filtre {print \$colonne_station, \$7, \$8}" "$fichier_donnees" > "$fichier_filtre"
+
+    if [[ $? -ne 0 ]]; then
+        echo "Erreur : Filtrage des données échoué."
+        exit 6
+    fi
+
+    echo "Données filtrées enregistrées dans '$fichier_filtre'."
+
+     
+
+
+
 # Fonction pour exécuter le traitement principal
 traitement_principal() {
     local fichier_donnees=$1
@@ -172,27 +236,16 @@ traitement_principal() {
     echo "Traitement principal terminé avec succès."
 }
 
-temps_execution () {
-    #Enregistre le temps au début de l'exécution
-    local debut_temps=$(date +%s)
-
-    #Enregistre le temps de fin d'exécution
-    local fin_temps=$(date +%s)
-
-    #Calcul le temps total 
-    local execution_temps=$((fin_temps-debut_temps))
-
-    #Affiche le temps
-    echo "Temps d'exécution total : $execution_temps secondes."
-    exit 0
-}
-
-
 main() {
+     debut_temps=$(date +%s)
     validation_arguments "$@" # On vérifie d'abord les arguments avant de lancer le script
     preparer_dossiers         # Préparation des dossiers requis
+    verifier_installer_gnuplot
     traitement_principal "$@" # Lancement du traitement principal
     echo "Script terminé avec succès !"
+     fin_temps=$(date +%s)
+     execution_temps=$((fin_temps - debut_temps))
+     echo "Temps d'exécution du script shell : $execution_temps secondes."
 }
 
 #Point d'entrée dans le script 
