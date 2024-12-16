@@ -51,7 +51,7 @@ validation_arguments() {
          hvb|hva|lv)
             ;;
         *)
-            echo "Erreur: Station Invalide '$type_de_station'. veuillez écrire 'hvb', 'hva', ou 'lv'."
+            echo "Erreur: Station Invalide '$type_de_station'. Veuillez écrire 'hvb', 'hva', ou 'lv'."
             affiche_aide
             exit 3 #Argument manquant ou invalide
             ;;
