@@ -205,7 +205,20 @@ filtrer_donnees() {
 
     echo "Données filtrées enregistrées dans '$fichier_filtre'."
 
-     
+     # Tri des données par capacité croissante et génération du fichier de sortie
+    local fichier_sortie="tmp/${type_station}_${type_consommateur}.csv"
+    echo "Tri des données par capacité croissante et création du fichier de sortie '$fichier_sortie'..."
+
+    # Créer le fichier avec les colonnes et les données triées par capacité croissante
+    sort -t: -k2,2n "$fichier_filtre" > "$fichier_sortie"
+
+    if [[ $? -ne 0 ]]; then
+        echo "Erreur : Échec du tri ou de la création du fichier de sortie."
+        exit 7
+    fi
+
+    echo "Fichier généré et trié avec succès : '$fichier_sortie'."
+}
 
 
 
