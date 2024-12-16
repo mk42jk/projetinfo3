@@ -129,7 +129,7 @@ verifier_executable_c() {
 #Fonction pour vérifier la présence de gnuplot et l'installer le cas échéant
  verifier_installer_gnuplot() {
     if ! command -v gnuplot &> /dev/null; then
-        echo "gnuplot n'est pas installé. Téléchargement..."
+        echo "Gnuplot n'est pas installé. Téléchargement..."
 
         # Vérifier le système d'exploitation et installer gnuplot en conséquence
         if [ -x "$(command -v apt-get)" ]; then
@@ -138,10 +138,10 @@ verifier_executable_c() {
             sudo apt-get install -y gnuplot
 
         else
-            echo "installation manuelle requise"
+            echo "Installation manuelle requise."
         fi
     else
-        echo "gnuplot est déjà installer."
+        echo "Gnuplot est déjà installé."
     fi
 }
 
