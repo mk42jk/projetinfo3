@@ -126,25 +126,6 @@ verifier_executable_c() {
     echo "Exécutable C vérifié et prêt."
 }
 
-#Fonction pour vérifier la présence de gnuplot et l'installer le cas échéant
- verifier_installer_gnuplot() {
-    if ! command -v gnuplot &> /dev/null; then
-        echo "Gnuplot n'est pas installé. Téléchargement..."
-
-        # Vérifier le système d'exploitation et installer gnuplot en conséquence
-        if [ -x "$(command -v apt-get)" ]; then
-        
-            sudo apt-get update
-            sudo apt-get install -y gnuplot
-
-        else
-            echo "Installation manuelle requise."
-        fi
-    else
-        echo "Gnuplot est déjà installé."
-    fi
-}
-
 #fonction pour créer le fichier temporaire des données filtrer en fonction des cas
 filtrer_donnees() {
 
@@ -268,10 +249,25 @@ traitement_principal() {
 #Voir avec jibril pour faire le fichier de sortie en fonction des cas
 # surement refaire une autre fonction
 
-#gnuplot graphique ("$fichier" temporaire car pas de fichier sommé)
+#gnuplot graphique ("$all" temporaire car pas de fichier sommé)
 
-     
-        local data_file="tests/all_min_max.csv"
+      if ! command -v gnuplot &> /dev/null; then
+        echo "Gnuplot n'est pas installé. Téléchargement..."
+
+        # Vérifier le système d'exploitation et installer gnuplot en conséquence
+        if [ -x "$(command -v apt-get)" ]; then
+        
+            sudo apt-get update
+            sudo apt-get install -y gnuplot
+
+        else
+            echo "Installation manuelle requise."
+        fi
+    else
+        echo "Gnuplot est déjà installé."
+    fi  
+    
+        local data_file="$fichier"
         local plot_file="graphs/graph.png"
         
         
