@@ -269,6 +269,12 @@ traitement_principal() {
 # surement refaire une autre fonction
 
 #gnuplot graphique ("$fichier" temporaire car pas de fichier sommé)
+
+     
+        local data_file="tests/all_min_max.csv"
+        local plot_file="graphs/graph.png"
+        
+        
         set terminal png size 1100,800
         set output ‘graph.png’
         set title « Les 10 Postes LV les plus chargés et les moins chargés"
@@ -285,17 +291,8 @@ traitement_principal() {
         set style line 2 lc rgb "green"
 
 
-        gnuplot -e  « plot  '$fichier' using 2:xtic(1) title 'Consommation en marge' linecolor rgb 'green' every ::0::9, \
-             '' using 3:xtic(1) title 'Consommation en surproduction' linecolor rgb 'red' every ::10::19"
-
-
-
-
-with histograms ls 2, \
-        '' using 3 title "Consommation en surcharge » with histograms ls 1
-EOF
-
-    echo "Le graphique a été généré dans le fichier '${plot_file}'."
+        gnuplot -e " plot '${data_file}' using 2:xtic(1) title "Consommation en marge" with histograms ls 2 'green' every ::0::9, \
+             '' using 3:xtic(1) title "Consommation en surproduction" with histograms ls 1 'red' every ::10::19"
 }
 
     echo "Traitement principal terminé avec succès."
