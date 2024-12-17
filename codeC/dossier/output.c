@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "../include/output.h"
+#include "output.h"
 
 // Fonction récursive pour l'écriture des données
 static void ecrire_donnees_rec(FILE* f, const NoeudAVL* noeud) {
