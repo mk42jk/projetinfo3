@@ -267,6 +267,37 @@ traitement_principal() {
 
 #Voir avec jibril pour faire le fichier de sortie en fonction des cas
 # surement refaire une autre fonction
+
+#gnuplot graphique ("$fichier" temporaire car pas de fichier sommé)
+        set terminal png size 1100,800
+        set output ‘graph.png’
+        set title « Les 10 Postes LV les plus chargés et les moins chargés"
+        set xlabel "Postes LV"
+        set ylabel "Consommation (kWh)"
+        set boxwidth 0.8
+        set style fill solid
+        set grid ytics
+
+        set datafile separator ';'
+
+      
+        set style line 1 lc rgb "red"
+        set style line 2 lc rgb "green"
+
+
+        gnuplot -e  « plot  '$fichier' using 2:xtic(1) title 'Consommation en marge' linecolor rgb 'green' every ::0::9, \
+             '' using 3:xtic(1) title 'Consommation en surproduction' linecolor rgb 'red' every ::10::19"
+
+
+
+
+with histograms ls 2, \
+        '' using 3 title "Consommation en surcharge » with histograms ls 1
+EOF
+
+    echo "Le graphique a été généré dans le fichier '${plot_file}'."
+}
+
     echo "Traitement principal terminé avec succès."
 }
 
