@@ -145,7 +145,9 @@ verifier_executable_c() {
     fi
 }
 
-filtrer_donnees() { #fonction pour créer le fichier temporaire des données filtrer en fonction des cas
+#fonction pour créer le fichier temporaire des données filtrer en fonction des cas
+filtrer_donnees() {
+
     local fichier_donnees="$1"
     local type_station="$2"
     local type_consommateur="$3"
@@ -158,6 +160,8 @@ filtrer_donnees() { #fonction pour créer le fichier temporaire des données fil
         affiche_aide
         exit 2 #code d'erreur 2 pour les fichier introuvable
     fi
+
+    #PENSER A RETIRER LE HEAD -N 1 Pour le c
 
     echo "Filtrage des données pour :"
     echo "  Type de station       : $type_station"
