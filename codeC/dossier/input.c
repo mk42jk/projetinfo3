@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "../include/input.h"
+#include "input.h"
 
 // Longueur maximale d'une ligne dans le fichier d'entrée
 #define LONGUEUR_MAX_LIGNE 1024
