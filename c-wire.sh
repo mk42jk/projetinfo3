@@ -145,7 +145,7 @@ verifier_executable_c() {
     fi
 }
 
-filtrer_donnees() {
+filtrer_donnees() { #fonction pour créer le fichier temporaire des données filtrer en fonction des cas
     local fichier_donnees="$1"
     local type_station="$2"
     local type_consommateur="$3"
@@ -185,7 +185,7 @@ filtrer_donnees() {
             exit 3
             ;;
     esac
-
+# A refaire ce soir au cas par cas plutot que un switch case 
     #  commande de filtrage
     local filtre=""
 
@@ -212,6 +212,9 @@ filtrer_donnees() {
 
     echo "Données filtrées enregistrées dans '$fichier_filtre'."
 
+
+# cette partie du code n'a pas sa place ici, à changer et le mettre dans traitement principal ou une autre fonction fichier_sortie
+
      # Tri des données par capacité croissante et génération du fichier de sortie
     local fichier_sortie="tmp/${type_station}_${type_consommateur}.csv"
     echo "Tri des données par capacité croissante et création du fichier de sortie '$fichier_sortie'..."
@@ -227,7 +230,7 @@ filtrer_donnees() {
     echo "Fichier généré et trié avec succès : '$fichier_sortie'."
 }
 
-
+# fin de la partie mal située
 
 # Fonction pour exécuter le traitement principal
 traitement_principal() {
@@ -244,7 +247,7 @@ traitement_principal() {
      verifier_executable_c
 
     # on prépare des paramètres pour le programme C
-    local fichier_filtre="tmp/${type_de_station}_${type_de_consommateur}.csv"
+    local fichier_filtre="tmp/filtered_data.csv"
     local params="$fichier_filtre $type_de_station $type_de_consommateur"
     if [[ -n "$ID_centrale" ]]; then
         params="$params $ID_centrale"
@@ -258,6 +261,8 @@ traitement_principal() {
         exit 6 # Code 6 : Erreur lors de l'exécution du programme C
     fi
 
+#Voir avec jibril pour faire le fichier de sortie en fonction des cas
+# surement refaire une autre fonction
     echo "Traitement principal terminé avec succès."
 }
 
