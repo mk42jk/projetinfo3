@@ -150,31 +150,87 @@ filtrer_donnees() {
     echo "  Type de consommateur  : $type_consommateur"
     echo "  ID de centrale        : ${ID_centrale:-Aucun}"
 
-    # Colonnes de filtrage
-    local colonne_station colonne_consommateur
-    case "$type_station" in
-        hvb) colonne_station=2 ;;
-        hva) colonne_station=3 ;;
-        lv)  colonne_station=4 ;;
-        *) 
-            echo "Erreur : Type de station inconnu '$type_station'."
+if [[ "$type_station" == "hvb" ]]; then
+        if [[ "$type_consommateur" == "comp" ]]; then
+            echo "Filtrage des données pour HVB avec consommateurs : 'comp'."
+            if [[ -z "$id_centrale" ]]; then
+                awk -F';' '$2 != "-" && $7 != "-" && $4 == "-" {
+                    print $2 ";" $7 ";" $8
+                }' "$fichier_donnees" | tr '-' '0' >> "$fichier_filtre"
+            else
+                awk -F';' -v id="$id_centrale" '$1 == id && $2 != "-" && $7 != "-" && $4 == "-" {
+                    print $2 ";" $7 ";" $8
+                }' "$fichier_donnees" | tr '-' '0' >> "$fichier_filtre"
+            fi
+        else
+            echo "Erreur : Type de consommateur '$type_consommateur' non valide pour 'hvb'."
             exit 3
-            ;;
-    esac
+        fi
 
-    case "$type_consommateur" in
-        comp) colonne_consommateur=5 ;;
-        indiv) colonne_consommateur=6 ;;
-        all) colonne_consommateur="5,6" ;; # Toutes les colonnes consommateurs
-        *)
-            echo "Erreur : Type de consommateur inconnu '$type_consommateur'."
+    elif [[ "$type_station" == "hva" ]]; then
+        if [[ "$type_consommateur" == "comp" ]]; then
+            echo "Filtrage des données pour HVA avec consommateurs : 'comp'."
+            if [[ -z "$id_centrale" ]]; then
+                awk -F';' '$3 != "-" && $7 != "-" && $4 == "-" {
+                    print $3 ";" $7 ";" $8
+                }' "$fichier_donnees" | tr '-' '0' >> "$fichier_filtre"
+            else
+                awk -F';' -v id="$id_centrale" '$1 == id && $3 != "-" && $7 != "-" && $4 == "-" {
+                    print $3 ";" $7 ";" $8
+                }' "$fichier_donnees" | tr '-' '0' >> "$fichier_filtre"
+            fi
+        else
+            echo "Erreur : Type de consommateur '$type_consommateur' non valide pour 'hva'."
             exit 3
-            ;;
-    esac
+        fi
 
-     case "
+    elif [[ "$type_station" == "lv" ]]; then
+        if [[ "$type_consommateur" == "comp" ]]; then
+            echo "Filtrage des données pour LV avec consommateurs : 'comp'."
+            if [[ -z "$id_centrale" ]]; then
+                awk -F';' '$4 != "-" && $5 != "-" && $7 == "-" {
+                    print $4 ";" $5 ";" $8
+                }' "$fichier_donnees" | tr '-' '0' >> "$fichier_filtre"
+            else
+                awk -F';' -v id="$id_centrale" '$1 == id && $4 != "-" && $5 != "-" && $7 == "-" {
+                    print $4 ";" $5 ";" $8
+                }' "$fichier_donnees" | tr '-' '0' >> "$fichier_filtre"
+            fi
 
-    
+        elif [[ "$type_consommateur" == "indiv" ]]; then
+            echo "Filtrage des données pour LV avec consommateurs : 'indiv'."
+            if [[ -z "$id_centrale" ]]; then
+                awk -F';' '$4 != "-" && $6 != "-" && $7 == "-" {
+                    print $4 ";" $6 ";" $8
+                }' "$fichier_donnees" | tr '-' '0' >> "$fichier_filtre"
+            else
+                awk -F';' -v id="$id_centrale" '$1 == id && $4 != "-" && $6 != "-" && $7 == "-" {
+                    print $4 ";" $6 ";" $8
+                }' "$fichier_donnees" | tr '-' '0' >> "$fichier_filtre"
+            fi
+
+        elif [[ "$type_consommateur" == "all" ]]; then
+            echo "Filtrage des données pour LV avec consommateurs : 'all'."
+            if [[ -z "$id_centrale" ]]; then
+                awk -F';' '$4 != "-" && ($5 != "-" || $6 != "-") {
+                    print $4 ";" $5 ";" $6 ";" $8
+                }' "$fichier_donnees" | tr '-' '0' >> "$fichier_filtre"
+            else
+                awk -F';' -v id="$id_centrale" '$1 == id && $4 != "-" && ($5 != "-" || $6 != "-") {
+                    print $4 ";" $5 ";" $6 ";" $8
+                }' "$fichier_donnees" | tr '-' '0' >> "$fichier_filtre"
+            fi
+
+        else
+            echo "Erreur : Type de consommateur '$type_consommateur' non valide pour 'lv'."
+            exit 3
+        fi
+
+    else
+        echo "Erreur : Type de station '$type_station' inconnu."
+        exit 3
+    fi
+    }
 
 # Fonction pour exécuter le traitement principal
 traitement_principal() {
@@ -191,25 +247,69 @@ traitement_principal() {
 
     # on prépare des paramètres pour le programme C
     local fichier_filtre="tmp/filtered_data.csv"
-    local params="$fichier_filtre $type_de_station $type_de_consommateur"
-    if [[ -n "$ID_centrale" ]]; then
-        params="$params $ID_centrale"
-    fi
+    local fichier_resultat="tmp/resultat.csv"
+    echo "Exécution du programme C pour le traitement..."
+    ./codeC/c-wire < "$fichier_filtre" > "$fichier_resultat"
+    [[ $? -ne 0 ]] && { echo "Erreur : Le programme C a rencontré une erreur."; exit 6; }
 
-    # Exécution de l'exécutable C
-      echo "Exécution du programme C pour le calcul des consommations..."
-    ./codeC/c-wire $params
-    if [[ $? -ne 0 ]]; then
-        echo "Erreur : Le programme C a rencontré une erreur."
-        exit 6 # Code 6 : Erreur lors de l'exécution du programme C
-    fi
+    case "$type_station" in
+        hvb)
+            [[ "$type_consommateur" == "comp" ]] && mv "$fichier_resultat" "tmp/hvb_comp.csv"
+            ;;
+        hva)
+            [[ "$type_consommateur" == "comp" ]] && mv "$fichier_resultat" "tmp/hva_comp.csv"
+            ;;
+        lv)
+            case "$type_consommateur" in
+                comp)
+                    mv "$fichier_resultat" "tmp/lv_comp.csv"
+                    ;;
+                indiv)
+                    mv "$fichier_resultat" "tmp/lv_indiv.csv"
+                    ;;
+                all)
+                    mv "$fichier_resultat" "tmp/lv_all.csv"
+                    generer_lv_all_minmax "tmp/lv_all.csv"
+                    ;;
+            esac
+            ;;
+    esac
+}
 
-#Voir avec jibril pour faire le fichier de sortie en fonction des cas
-# surement refaire une autre fonction
+generer_lv_all_minmax() {
+    local fichier_input="$1"
+    local fichier_minmax="tmp/lv_all_minmax.csv"
+    local fichier_graphique="graphs/lv_minmax.png"
 
+    echo "Station;Capacité;Consommation;Différence" > "$fichier_minmax"
 
+    awk -F';' 'NR > 1 {
+        diff = $3 - $2;
+        abs_diff = (diff < 0) ? -diff : diff;
+        print $1 ";" $2 ";" $3 ";" abs_diff;
+    }' "$fichier_input" | sort -t';' -k4,4nr > tmp/sorted_data.csv
 
-    echo "Traitement principal terminé avec succès."
+    (head -n 10 tmp/sorted_data.csv; tail -n 10 tmp/sorted_data.csv) >> "$fichier_minmax"
+    echo "Fichier Min/Max généré : $fichier_minmax."
+
+    # Génération du graphique avec Gnuplot
+    gnuplot <<-EOF
+        set terminal png size 1200,800
+        set output '${fichier_graphique}'
+        set title "Top 10 et Bottom 10 Stations LV"
+        set xlabel "Stations"
+        set ylabel "Consommation (kWh)"
+        set style data histograms
+        set style fill solid
+        set boxwidth 0.8
+        set grid ytics
+        set datafile separator ';'
+
+        plot '${fichier_minmax}' using 2:xtic(1) title "Capacité" lc rgb "green", \
+             '' using 3 title "Consommation" lc rgb "red"
+EOF
+
+    echo "Graphique généré : $fichier_graphique."
 }
 
 main() {
@@ -218,6 +318,7 @@ main() {
     preparer_dossiers         # Préparation des dossiers requis
     verifier_installer_gnuplot
     traitement_principal "$@" # Lancement du traitement principal
+    generer_lv_all_minmax()
     echo "Script terminé avec succès !"
      fin_temps=$(date +%s)
      execution_temps=$((fin_temps - debut_temps))
