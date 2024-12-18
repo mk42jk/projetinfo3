@@ -116,6 +116,7 @@ verifier_executable_c() {
     if [[ ! -f "$executable" || "$executable" -ot "$source" ]]; then
         echo "Compilation de l'exécutable C..."
         pushd "codeC" > /dev/null
+
         make
         if [[ $? -ne 0 ]]; then
             echo "Erreur : Échec de la compilation du programme C."
@@ -142,7 +143,7 @@ filtrer_donnees() {
         exit 2 #code d'erreur 2 pour les fichier introuvable
     fi
 
-    #PENSER A RETIRER LE HEAD -N 1 Pour le c
+    head -n 1 "$fichier_donnees" #retirez la première ligne 
 
     echo "Filtrage des données pour :"
     echo "  Type de station       : $type_station"
@@ -170,52 +171,10 @@ filtrer_donnees() {
             exit 3
             ;;
     esac
-# A refaire ce soir au cas par cas plutot que un switch case 
-    #  commande de filtrage
-    local filtre=""
 
-    # Filtrer par type de station
-    filtre+="\$$colonne_station != \"-\""
+     case "
 
-    # Filtrer par ID de centrale (si il est fourni)
-    if [[ -n "$ID_centrale" ]]; then
-        filtre+=" && \$1 == \"$ID_centrale\""
-    fi
-
-    # Filtrer par type de consommateur
-    if [[ "$type_consommateur" != "all" ]]; then
-        filtre+=" && \$$colonne_consommateur != \"-\""
-    fi
-
-    # Exécution du filtrage avec awk
-    awk -F';' "BEGIN {OFS=\":\"} $filtre {print \$colonne_station, \$7, \$8}" "$fichier_donnees" > "$fichier_filtre"
-
-    if [[ $? -ne 0 ]]; then
-        echo "Erreur : Filtrage des données échoué."
-        exit 6
-    fi
-
-    echo "Données filtrées enregistrées dans '$fichier_filtre'."
-
-
-# cette partie du code n'a pas sa place ici, à changer et le mettre dans traitement principal ou une autre fonction fichier_sortie
-
-     # Tri des données par capacité croissante et génération du fichier de sortie
-    local fichier_sortie="tmp/${type_station}_${type_consommateur}.csv"
-    echo "Tri des données par capacité croissante et création du fichier de sortie '$fichier_sortie'..."
-
-    # Créer le fichier avec les colonnes et les données triées par capacité croissante
-    sort -t: -k2,2n "$fichier_filtre" > "$fichier_sortie"
-
-    if [[ $? -ne 0 ]]; then
-        echo "Erreur : Échec du tri ou de la création du fichier de sortie."
-        exit 7
-    fi
-
-    echo "Fichier généré et trié avec succès : '$fichier_sortie'."
-}
-
-# fin de la partie mal située
+    
 
 # Fonction pour exécuter le traitement principal
 traitement_principal() {
@@ -228,8 +187,7 @@ traitement_principal() {
     
       # Filtrage des données avant d'exécuter le programme C
     filtrer_donnees "$fichier_donnees" "$type_de_station" "$type_de_consommateur" "$ID_centrale"
-
-     verifier_executable_c
+    verifier_executable_c
 
     # on prépare des paramètres pour le programme C
     local fichier_filtre="tmp/filtered_data.csv"
@@ -249,47 +207,7 @@ traitement_principal() {
 #Voir avec jibril pour faire le fichier de sortie en fonction des cas
 # surement refaire une autre fonction
 
-#gnuplot graphique ("$all" temporaire car pas de fichier sommé)
 
-      if ! command -v gnuplot &> /dev/null; then
-        echo "Gnuplot n'est pas installé. Téléchargement..."
-
-        # Vérifier le système d'exploitation et installer gnuplot en conséquence
-        if [ -x "$(command -v apt-get)" ]; then
-        
-            sudo apt-get update
-            sudo apt-get install -y gnuplot
-
-        else
-            echo "Installation manuelle requise."
-        fi
-    else
-        echo "Gnuplot est déjà installé."
-    fi  
-    
-        local data_file="$fichier"
-        local plot_file="graphs/graph.png"
-        
-        
-        set terminal png size 1100,800
-        set output ‘graph.png’
-        set title « Les 10 Postes LV les plus chargés et les moins chargés"
-        set xlabel "Postes LV"
-        set ylabel "Consommation (kWh)"
-        set boxwidth 0.8
-        set style fill solid
-        set grid ytics
-
-        set datafile separator ';'
-
-      
-        set style line 1 lc rgb "red"
-        set style line 2 lc rgb "green"
-
-
-        gnuplot -e " plot '${data_file}' using 2:xtic(1) title "Consommation en marge" with histograms ls 2 'green' every ::0::9, \
-             '' using 3:xtic(1) title "Consommation en surproduction" with histograms ls 1 'red' every ::10::19"
-}
 
     echo "Traitement principal terminé avec succès."
 }
