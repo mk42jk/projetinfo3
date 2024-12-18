@@ -12,11 +12,6 @@ int max(int a, int b) {
     return (a > b) ? a : b;
 }
 
-// Fonction pour obtenir la valeur minimale entre deux entiers
-int min(int a, int b) {
-    return (a < b) ? a : b;
-}
-
 // Vérifie si un nœud est valide
 bool est_noeud_valide(const NoeudAVL *noeud) {
     return noeud != NULL;
