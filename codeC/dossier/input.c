@@ -10,13 +10,13 @@
 // Longueur maximale d'une ligne dans le fichier d'entrée
 #define LONGUEUR_MAX_LIGNE 1024
 
-// Traite une ligne de données du fichier d'entrée
+// Traite une ligne de données de l'entrée standard
 static int traiter_ligne(char* ligne, NoeudAVL** racine) {
     if (!ligne || !racine) return ERREUR_LECTURE;
 
     char* token;
     int id_station;
-    double capacite, consommation;
+    float capacite, consommation;  // Changé en float pour correspondre à la structure
     
     // Format attendu : "id_station:capacite:consommation"
     token = strtok(ligne, ":");
@@ -25,42 +25,56 @@ static int traiter_ligne(char* ligne, NoeudAVL** racine) {
     
     token = strtok(NULL, ":");
     if (!token) return ERREUR_LECTURE;
-    capacite = atof(token);
+    capacite = (float)atof(token);  // Conversion explicite en float
     
     token = strtok(NULL, ":");
     if (!token) return ERREUR_LECTURE;
-    consommation = atof(token);
+    consommation = (float)atof(token);  // Conversion explicite en float
+    
+    // Validation des données
+    if (capacite < 0 || consommation < 0) {
+        return ERREUR_DONNEES;
+    }
     
     // Mise à jour de l'AVL
     *racine = inserer_noeud(*racine, id_station, capacite);
     if (*racine == NULL) return ERREUR_MEMOIRE;
     
     // Mise à jour de la consommation
-    maj_consommation(chercher_noeud(*racine, id_station), consommation);
+    NoeudAVL* noeud = chercher_noeud(*racine, id_station);
+    if (!noeud) return ERREUR_MEMOIRE;
+    maj_consommation(noeud, consommation);
     
     return SUCCES;
 }
 
-// Traitement du fichier d'entrée
-int traiter_fichier_entree(const char* nom_fichier, NoeudAVL** racine) {
-    if (!nom_fichier || !racine) return ERREUR_LECTURE;
-    
-    FILE* f = fopen(nom_fichier, "r");
-    if (!f) return ERREUR_LECTURE;
+// Traitement de l'entrée standard
+int traiter_entree(NoeudAVL** racine) {
+    if (!racine) return ERREUR_LECTURE;
     
     char ligne[LONGUEUR_MAX_LIGNE];
     int resultat = SUCCES;
+    int nb_stations = 0;  // Compteur de stations
     
-    // Lecture ligne par ligne
-    while (fgets(ligne, sizeof(ligne), f)) {
-        // Suppression du retour à la ligne
-        ligne[strcspn(ligne, "\r\n")] = 0;
+    rewind(stdin); // Remettre la lecture depuis stdin
+    
+    // Lecture depuis l'entrée standard
+    while (fgets(ligne, sizeof(ligne), stdin)) {
+        // Supprimer le retour à la ligne
+        ligne[strcspn(ligne, "\n")] = 0;
         
-        // Traitement de la ligne
         resultat = traiter_ligne(ligne, racine);
-        if (resultat != SUCCES) break;
+        if (resultat != SUCCES) {
+            fprintf(stderr, "Erreur lors du traitement de la ligne %d\n", nb_stations + 1);
+            break;
+        }
+        nb_stations++;
     }
     
-    fclose(f);
+    if (resultat == SUCCES && nb_stations == 0) {
+        fprintf(stderr, "Attention : aucune donnée n'a été lue\n");
+        return ERREUR_LECTURE;
+    }
+    
     return resultat;
 }

@@ -10,8 +10,8 @@
 // Structure d'un nœud de l'arbre AVL
 typedef struct NoeudAVL {
     int id_station;        // Identifiant unique de la station
-    double capacite;       // Capacité de production de la station
-    double consommation;   // Consommation actuelle de la station
+    float capacite;       // Capacité de production de la station
+    float consommation;   // Consommation actuelle de la station
     int hauteur;          // Hauteur du nœud pour l'équilibrage
     struct NoeudAVL *gauche;  // Sous-arbre gauche
     struct NoeudAVL *droite;  // Sous-arbre droit

@@ -7,12 +7,13 @@
 
 #include "avl.h"
 
-// Codes d'erreur
+// Codes d'erreur pour la lecture des données
 #define SUCCES 0
 #define ERREUR_LECTURE 1
 #define ERREUR_MEMOIRE 2
+#define ERREUR_DONNEES 3
 
-// Fonction de traitement du fichier d'entrée
-int traiter_fichier_entree(const char* nom_fichier, NoeudAVL** racine);
+// Traitement de l'entrée standard
+int traiter_entree(NoeudAVL** racine);
 
 #endif // INPUT_H

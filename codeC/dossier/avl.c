@@ -2,152 +2,127 @@
 // Description : Implémentation des fonctions de gestion de l'arbre AVL
 // pour le stockage et la manipulation des données des stations
 
-#include "avl.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
+#include "avl.h"
 
-// Fonction pour obtenir la valeur maximale entre deux entiers
-int max(int a, int b) {
+// Fonctions utilitaires privées
+static int max(int a, int b) {
     return (a > b) ? a : b;
 }
 
-// Vérifie si un nœud est valide
-bool est_noeud_valide(const NoeudAVL *noeud) {
-    return noeud != NULL;
+static int obtenir_hauteur(const NoeudAVL *noeud) {
+    return noeud ? noeud->hauteur : 0;
 }
 
-// Crée un nouveau nœud AVL avec les données spécifiées
-NoeudAVL* creer_noeud(int id_station, double capacite) {
-    NoeudAVL* nouveau_noeud = (NoeudAVL*)malloc(sizeof(NoeudAVL));
+static int obtenir_equilibre(const NoeudAVL *noeud) {
+    return noeud ? obtenir_hauteur(noeud->gauche) - obtenir_hauteur(noeud->droite) : 0;
+}
+
+static void maj_hauteur(NoeudAVL *noeud) {
+    if (!noeud) return;
+    noeud->hauteur = 1 + max(obtenir_hauteur(noeud->gauche),
+                            obtenir_hauteur(noeud->droite));
+}
+
+// Rotations pour l'équilibrage
+static NoeudAVL* rotation_droite(NoeudAVL *y) {
+    if (!y || !y->gauche) return y;
     
-    if (nouveau_noeud != NULL) {
-        nouveau_noeud->id_station = id_station;
-        nouveau_noeud->capacite = capacite;
-        nouveau_noeud->consommation = 0.0;
-        nouveau_noeud->hauteur = 1;
-        nouveau_noeud->gauche = NULL;
-        nouveau_noeud->droite = NULL;
-    }
-    return nouveau_noeud;
+    NoeudAVL *x = y->gauche;
+    NoeudAVL *T2 = x->droite;
+
+    x->droite = y;
+    y->gauche = T2;
+
+    maj_hauteur(y);
+    maj_hauteur(x);
+
+    return x;
 }
 
-// Libère la mémoire allouée pour un arbre AVL
+static NoeudAVL* rotation_gauche(NoeudAVL *x) {
+    if (!x || !x->droite) return x;
+    
+    NoeudAVL *y = x->droite;
+    NoeudAVL *T2 = y->gauche;
+
+    y->gauche = x;
+    x->droite = T2;
+
+    maj_hauteur(x);
+    maj_hauteur(y);
+
+    return y;
+}
+
+// Crée un nouveau nœud AVL
+NoeudAVL* creer_noeud(int id_station, double capacite) {
+    NoeudAVL* noeud = (NoeudAVL*)malloc(sizeof(NoeudAVL));
+    if (!noeud) return NULL;
+    
+    noeud->id_station = id_station;
+    noeud->capacite = (float)capacite;
+    noeud->consommation = 0.0f;
+    noeud->hauteur = 1;
+    noeud->gauche = noeud->droite = NULL;
+    
+    return noeud;
+}
+
+// Libère la mémoire de l'arbre
 void liberer_avl(NoeudAVL *racine) {
-    if (!est_noeud_valide(racine)) {
-        return;
-    }
+    if (!racine) return;
     liberer_avl(racine->gauche);
     liberer_avl(racine->droite);
     free(racine);
 }
 
-// Obtient la hauteur d'un nœud
-int obtenir_hauteur(const NoeudAVL *noeud) {
-    if (est_noeud_valide(noeud)) {
-        return noeud->hauteur;
-    }
-    return 0;
-}
-
-// Obtient l'équilibre d'un nœud
-int obtenir_equilibre(const NoeudAVL *noeud) {
-    if (est_noeud_valide(noeud)) {
-        return obtenir_hauteur(noeud->gauche) - obtenir_hauteur(noeud->droite);
-    }
-    return 0;
-}
-
-// Effectue une rotation à droite sur un nœud
-NoeudAVL* rotation_droite(NoeudAVL *racine) {
-    if (!est_noeud_valide(racine) || !est_noeud_valide(racine->gauche)) {
-        return racine;
-    }
-    
-    NoeudAVL *pivot = racine->gauche;
-    NoeudAVL *sous_arbre = pivot->droite;
-
-    // Effectue la rotation
-    pivot->droite = racine;
-    racine->gauche = sous_arbre;
-
-    // Met à jour les hauteurs dans le bon ordre (de bas en haut)
-    racine->hauteur = max(obtenir_hauteur(racine->gauche), obtenir_hauteur(racine->droite)) + 1;
-    pivot->hauteur = max(obtenir_hauteur(pivot->gauche), racine->hauteur) + 1;
-
-    return pivot;
-}
-
-// Effectue une rotation à gauche sur un nœud
-NoeudAVL* rotation_gauche(NoeudAVL *racine) {
-    if (!est_noeud_valide(racine) || !est_noeud_valide(racine->droite)) {
-        return racine;
-    }
-    
-    NoeudAVL *pivot = racine->droite;
-    NoeudAVL *sous_arbre = pivot->gauche;
-
-    // Effectue la rotation
-    pivot->gauche = racine;
-    racine->droite = sous_arbre;
-
-    // Met à jour les hauteurs dans le bon ordre (de bas en haut)
-    racine->hauteur = max(obtenir_hauteur(racine->gauche), obtenir_hauteur(racine->droite)) + 1;
-    pivot->hauteur = max(obtenir_hauteur(pivot->gauche), racine->hauteur) + 1;
-
-    return pivot;
-}
-
 // Met à jour la consommation d'un nœud
-void maj_consommation(NoeudAVL *noeud, double consommation) {
-    if (est_noeud_valide(noeud)) {
-        noeud->consommation += consommation;
-    }
+void maj_consommation(NoeudAVL *noeud, float consommation) {
+    if (!noeud) return;
+    noeud->consommation = consommation;
 }
 
-// Insère un nouveau nœud dans l'arbre AVL
+// Insère ou met à jour un nœud dans l'arbre
 NoeudAVL* inserer_noeud(NoeudAVL *racine, int id_station, double capacite) {
-    // Cas de base : arbre vide
-    if (!est_noeud_valide(racine)) {
+    // Insertion normale BST
+    if (!racine)
         return creer_noeud(id_station, capacite);
-    }
 
-    // Insertion récursive selon l'id de la station
-    if (id_station < racine->id_station) {
-        racine->gauche = inserer_noeud(racine->gauche, id_station, capacite);
-    } else if (id_station > racine->id_station) {
-        racine->droite = inserer_noeud(racine->droite, id_station, capacite);
-    } else {
-        // Mise à jour de la capacité si le nœud existe déjà
+    // Mise à jour si le nœud existe déjà
+    if (id_station == racine->id_station) {
         racine->capacite = capacite;
         return racine;
     }
 
-    // Met à jour la hauteur du nœud courant
-    racine->hauteur = 1 + max(obtenir_hauteur(racine->gauche), obtenir_hauteur(racine->droite));
+    if (id_station < racine->id_station)
+        racine->gauche = inserer_noeud(racine->gauche, id_station, capacite);
+    else
+        racine->droite = inserer_noeud(racine->droite, id_station, capacite);
 
-    // Calcule le facteur d'équilibre
+    // Mise à jour de la hauteur
+    maj_hauteur(racine);
+
+    // Équilibrage
     int equilibre = obtenir_equilibre(racine);
 
-    // Vérifie les cas de déséquilibre et effectue les rotations nécessaires
-    
-    // Cas Gauche-Gauche : rotation simple à droite
-    if (equilibre > 1 && id_station < racine->gauche->id_station) {
+    // Cas Gauche-Gauche
+    if (equilibre > 1 && id_station < racine->gauche->id_station)
         return rotation_droite(racine);
-    }
-    
-    // Cas Droite-Droite : rotation simple à gauche
-    if (equilibre < -1 && id_station > racine->droite->id_station) {
+
+    // Cas Droite-Droite
+    if (equilibre < -1 && id_station > racine->droite->id_station)
         return rotation_gauche(racine);
-    }
-    
-    // Cas Gauche-Droite : double rotation (gauche puis droite)
+
+    // Cas Gauche-Droite
     if (equilibre > 1 && id_station > racine->gauche->id_station) {
         racine->gauche = rotation_gauche(racine->gauche);
         return rotation_droite(racine);
     }
-    
-    // Cas Droite-Gauche : double rotation (droite puis gauche)
+
+    // Cas Droite-Gauche
     if (equilibre < -1 && id_station < racine->droite->id_station) {
         racine->droite = rotation_droite(racine->droite);
         return rotation_gauche(racine);
@@ -156,16 +131,13 @@ NoeudAVL* inserer_noeud(NoeudAVL *racine, int id_station, double capacite) {
     return racine;
 }
 
-
+// Recherche un nœud dans l'arbre
 NoeudAVL* chercher_noeud(NoeudAVL *racine, int id_station) {
-    // Cas de base : racine nulle ou nœud trouvé
-    if (!est_noeud_valide(racine) || racine->id_station == id_station) {
+    if (!racine || racine->id_station == id_station)
         return racine;
-    }
-    
-    // Recherche récursive dans le sous-arbre approprié
-    if (id_station < racine->id_station) {
+
+    if (id_station < racine->id_station)
         return chercher_noeud(racine->gauche, id_station);
-    }
+    
     return chercher_noeud(racine->droite, id_station);
 }

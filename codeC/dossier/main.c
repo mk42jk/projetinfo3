@@ -1,6 +1,5 @@
 // Fichier : main.c
-// Description : Programme principal de gestion du réseau électrique
-// Lit les données d'entrée, les traite et génère un rapport de sortie
+// Description : Point d'entrée du programme de traitement des données
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,24 +7,19 @@
 #include "output.h"
 #include "avl.h"
 
-int main(int argc, char* argv[]) {
-    // Vérification des arguments
-    if (argc != 2) {
-        fprintf(stderr, "Usage: %s <fichier_donnees_filtrees>\n", argv[0]);
-        return 1;
-    }
-
-    // Initialisation de l'arbre AVL
+int main(void) {
     NoeudAVL* racine = NULL;
+    int resultat;
 
-    // Traitement du fichier d'entrée
-    int resultat = traiter_fichier_entree(argv[1], &racine);
+    // Lecture et traitement des données depuis stdin
+    resultat = traiter_entree(&racine);
     if (resultat != SUCCES) {
-        fprintf(stderr, "Erreur lors du traitement du fichier\n");
+        fprintf(stderr, "Erreur lors du traitement des données\n");
+        liberer_avl(racine);
         return resultat;
     }
 
-    // Écriture des résultats sur la sortie standard
+    // Écriture des résultats sur stdout
     ecrire_donnees(stdout, racine);
 
     // Libération de la mémoire
