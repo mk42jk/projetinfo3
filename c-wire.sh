@@ -148,7 +148,7 @@ filtrer_donnees() {
     echo "Filtrage des données pour :"
     echo "  Type de station       : $type_station"
     echo "  Type de consommateur  : $type_consommateur"
-    echo "  ID de centrale        : ${ID_centrale:-Aucun}"
+    echo "  ID de centrale        : ${id_centrale:-Aucun}"
 
 if [[ "$type_station" == "hvb" ]]; then
         if [[ "$type_consommateur" == "comp" ]]; then
