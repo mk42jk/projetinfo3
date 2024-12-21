@@ -12,22 +12,22 @@ static int max(int a, int b) {
     return (a > b) ? a : b;
 }
 
-static int obtenir_hauteur(const NoeudAVL *noeud) {
+int obtenir_hauteur(const NoeudAVL *noeud) {
     return noeud ? noeud->hauteur : 0;
 }
 
-static int obtenir_equilibre(const NoeudAVL *noeud) {
+int obtenir_equilibre(const NoeudAVL *noeud) {
     return noeud ? obtenir_hauteur(noeud->gauche) - obtenir_hauteur(noeud->droite) : 0;
 }
 
-static void maj_hauteur(NoeudAVL *noeud) {
+void maj_hauteur(NoeudAVL *noeud) {
     if (!noeud) return;
     noeud->hauteur = 1 + max(obtenir_hauteur(noeud->gauche),
                             obtenir_hauteur(noeud->droite));
 }
 
 // Rotations pour l'équilibrage
-static NoeudAVL* rotation_droite(NoeudAVL *y) {
+NoeudAVL* rotation_droite(NoeudAVL *y) {
     if (!y || !y->gauche) return y;
     
     NoeudAVL *x = y->gauche;
@@ -42,7 +42,7 @@ static NoeudAVL* rotation_droite(NoeudAVL *y) {
     return x;
 }
 
-static NoeudAVL* rotation_gauche(NoeudAVL *x) {
+NoeudAVL* rotation_gauche(NoeudAVL *x) {
     if (!x || !x->droite) return x;
     
     NoeudAVL *y = x->droite;
@@ -80,7 +80,7 @@ void liberer_avl(NoeudAVL *racine) {
 }
 
 // Met à jour la consommation d'un nœud
-void maj_consommation(NoeudAVL *noeud, float consommation) {
+void maj_consommation(NoeudAVL *noeud, double consommation) {
     if (!noeud) return;
     noeud->consommation = consommation;
 }
