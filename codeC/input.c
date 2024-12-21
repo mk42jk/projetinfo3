@@ -57,6 +57,12 @@ int traiter_entree(NoeudAVL** racine) {
     int nb_stations = 0;  // Compteur de stations
     
     rewind(stdin); // Remettre la lecture depuis stdin
+
+    // Lire et ignorer la première ligne (en-tête)
+    if (!fgets(ligne, sizeof(ligne), stdin)) {
+        fprintf(stderr, "Erreur : impossible de lire la première ligne\n");
+        return ERREUR_LECTURE;
+    }
     
     // Lecture depuis l'entrée standard
     while (fgets(ligne, sizeof(ligne), stdin)) {
