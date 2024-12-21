@@ -14,7 +14,7 @@
 static int traiter_ligne(char* ligne, NoeudAVL** racine) {
     if (!ligne || !racine) return ERREUR_LECTURE;
 
-    char* token;
+    char* elmt;
     int id_station;
     float capacite, consommation;  // Changé en float pour correspondre à la structure
     
