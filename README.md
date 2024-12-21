@@ -62,12 +62,12 @@ Le programme accepte entre 3 et 4 arguments :
 
 1. Avec 3 paramètres :
    ```bash
-   ./c-wire.sh data/input.csv hvb comp
+   ./c-wire.sh input/data.csv hvb comp
    ```
 
 2. Avec 4 paramètres :
    ```bash
-   ./c-wire.sh data/input.csv lv all 2
+   ./c-wire.sh input/data.csv lv all 2
    ```
 
 ---
