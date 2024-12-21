@@ -19,15 +19,15 @@ static int traiter_ligne(char* ligne, NoeudAVL** racine) {
     float capacite, consommation;  // Changé en float pour correspondre à la structure
     
     // Format attendu : "id_station:capacite:consommation"
-    token = strtok(ligne, ":");
+    token = strtok(ligne, ";");
     if (!token) return ERREUR_LECTURE;
     id_station = atoi(token);
     
-    token = strtok(NULL, ":");
+    token = strtok(NULL, ";");
     if (!token) return ERREUR_LECTURE;
     capacite = (float)atof(token);  // Conversion explicite en float
     
-    token = strtok(NULL, ":");
+    token = strtok(NULL, ";");
     if (!token) return ERREUR_LECTURE;
     consommation = (float)atof(token);  // Conversion explicite en float
     
