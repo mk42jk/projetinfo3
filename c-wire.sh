@@ -151,7 +151,6 @@ filtrer_donnees() {
         exit 2 #code d'erreur 2 pour les fichier introuvable
     fi
 
-    head -n 1 "$fichier_donnees" #retirez la première ligne 
 
     echo "Filtrage des données pour :"
     echo "  Type de station       : $type_station"
