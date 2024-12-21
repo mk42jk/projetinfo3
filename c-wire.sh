@@ -1,4 +1,5 @@
 #!/bin/bash
+
 #Fonction pour l'affichage de l'aide
 affiche_aide(){
      echo "Fonction d'aide exécutée."
@@ -170,6 +171,7 @@ filtrer_donnees() {
     echo "  Type de station       : $type_station"
     echo "  Type de consommateur  : $type_consommateur"
     echo "  Identifiant de centrale        : ${id_centrale:-Aucun}"
+    
 #Si les arguments sont "hvb comp".
 if [[ "$type_station" == "hvb" ]]; then
         if [[ "$type_consommateur" == "comp" ]]; then 
@@ -230,44 +232,44 @@ elif [[ "$type_station" == "lv" ]]; then
             comp)
                 echo "Filtrage des données pour LV avec consommateurs : 'comp'."
                 if [[ -z "$id_centrale" ]]; then
-                    # Filtrer les lignes de capacité
+                    # Filtrer les lignes de capacité (corrigé)
                     awk -F';' '
-                        $4 != "-" && $7 == "-" { print $4 ":" $7 ":0" }
+                        $4 != "-" && $7 != "-" { print $4 ":" $7 ":0" }
                     ' "$fichier_donnees" >> "$fichier_filtre" || { echo "Erreur lors du filtrage avec awk."; exit 9; }
 
                     # Filtrer les lignes de consommation (entreprises)
                     awk -F';' '
-                        $4 != "-" && $5 != "-" && $7 == "-" { print $4 ":0:" $8 }
+                        $4 != "-" && $5 != "-" && $7 != "-" { print $4 ":0:" $8 }
                     ' "$fichier_donnees" >> "$fichier_filtre" || { echo "Erreur lors du filtrage avec awk."; exit 9; }
                 else
                     awk -F';' -v id="$id_centrale" '
-                        $1 == id && $4 != "-" && $7 == "-" { print $4 ":" $7 ":0" }
+                        $1 == id && $4 != "-" && $7 != "-" { print $4 ":" $7 ":0" }
                     ' "$fichier_donnees" >> "$fichier_filtre" || { echo "Erreur lors du filtrage avec awk."; exit 9; }
 
                     awk -F';' -v id="$id_centrale" '
-                        $1 == id && $4 != "-" && $5 != "-" && $7 == "-" { print $4 ":0:" $8 }
+                        $1 == id && $4 != "-" && $5 != "-" && $7 != "-" { print $4 ":0:" $8 }
                     ' "$fichier_donnees" >> "$fichier_filtre" || { echo "Erreur lors du filtrage avec awk."; exit 9; }
                 fi
                 ;;
-            indiv) #Si les arguments sont "lv indiv".
+            indiv)
                 echo "Filtrage des données pour LV avec consommateurs : 'indiv'."
                 if [[ -z "$id_centrale" ]]; then
-                    # Filtrer les lignes de capacité
+                    # Filtrer les lignes de capacité (corrigé)
                     awk -F';' '
-                        $4 != "-" && $7 == "-" { print $4 ":" $7 ":0" }
+                        $4 != "-" && $7 != "-" { print $4 ":" $7 ":0" }
                     ' "$fichier_donnees" >> "$fichier_filtre" || { echo "Erreur lors du filtrage avec awk."; exit 9; }
 
                     # Filtrer les lignes de consommation (particuliers)
                     awk -F';' '
-                        $4 != "-" && $6 != "-" && $7 == "-" { print $4 ":0:" $8 }
+                        $4 != "-" && $6 != "-" && $7 != "-" { print $4 ":0:" $8 }
                     ' "$fichier_donnees" >> "$fichier_filtre" || { echo "Erreur lors du filtrage avec awk."; exit 9; }
                 else
                     awk -F';' -v id="$id_centrale" '
-                        $1 == id && $4 != "-" && $7 == "-" { print $4 ":" $7 ":0" }
+                        $1 == id && $4 != "-" && $7 != "-" { print $4 ":" $7 ":0" }
                     ' "$fichier_donnees" >> "$fichier_filtre" || { echo "Erreur lors du filtrage avec awk."; exit 9; }
 
                     awk -F';' -v id="$id_centrale" '
-                        $1 == id && $4 != "-" && $6 != "-" && $7 == "-" { print $4 ":0:" $8 }
+                        $1 == id && $4 != "-" && $6 != "-" && $7 != "-" { print $4 ":0:" $8 }
                     ' "$fichier_donnees" >> "$fichier_filtre" || { echo "Erreur lors du filtrage avec awk."; exit 9; }
                 fi
                 ;;
@@ -420,18 +422,17 @@ generer_lv_all_minmax() {
 
     awk -F':' '
         NR > 1 {
-            # Chaque station a une ligne avec capacité et consommation
-            # Calculer la différence absolue entre capacité et consommation
-            diff = $3 - $2 # (Consommation - Capacité)
+            # Calculer la différence absolue entre consommation et capacité
+            diff = $3 - $2
             if (diff < 0) diff = -diff
             print $1 ":" $2 ":" $3 ":" diff
         }
-    ' "$fichier_input" | sort -t':' -k4,4nr > tmp/sorted_data.csv
+    ' "$fichier_input" | sort -t':' -k1,1 -k4,4nr | uniq > tmp/sorted_data_unique.csv
 
     # Extraire les 10 premiers (plus grandes différences) et les 10 derniers (plus petites différences)
     {
-        head -n 10 tmp/sorted_data.csv
-        tail -n 10 tmp/sorted_data.csv
+        head -n 10 tmp/sorted_data_unique.csv
+        tail -n 10 tmp/sorted_data_unique.csv
     } >> "$fichier_minmax"
 
     echo "Fichier Min/Max généré : $fichier_minmax."
@@ -456,7 +457,7 @@ EOF
     echo "Graphique généré : $fichier_graphique."
 
     # Nettoyage du fichier temporaire
-    rm -f tmp/sorted_data.csv
+    rm -f tmp/sorted_data.csv tmp/sorted_data_unique.csv
 }
 
 main() {
