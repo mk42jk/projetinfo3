@@ -30,31 +30,31 @@ void maj_hauteur(NoeudAVL *noeud) {
 NoeudAVL* rotation_droite(NoeudAVL *y) {
     if (!y || !y->gauche) return y;
     
-    NoeudAVL *x = y->gauche;
-    NoeudAVL *T2 = x->droite;
+    NoeudAVL *p = y->gauche;
+    NoeudAVL *z = p->droite;
 
-    x->droite = y;
-    y->gauche = T2;
+    p->droite = y;
+    y->gauche = z;
 
     maj_hauteur(y);
-    maj_hauteur(x);
+    maj_hauteur(p);
 
-    return x;
+    return p;
 }
 
 NoeudAVL* rotation_gauche(NoeudAVL *x) {
     if (!x || !x->droite) return x;
     
-    NoeudAVL *y = x->droite;
-    NoeudAVL *T2 = y->gauche;
+    NoeudAVL *p = x->droite;
+    NoeudAVL *z = p->gauche;
 
-    y->gauche = x;
-    x->droite = T2;
+    p->gauche = x;
+    x->droite = z;
 
     maj_hauteur(x);
-    maj_hauteur(y);
+    maj_hauteur(p);
 
-    return y;
+    return p;
 }
 
 // Crée un nouveau nœud AVL
