@@ -127,6 +127,14 @@ verifier_executable_c() {
     echo "Exécutable C vérifié et prêt."
 }
 
+verifier_installer_gnuplot() {
+    if ! command -v gnuplot &> /dev/null; then
+        echo "Erreur : Gnuplot n'est pas installé. Veuillez l'installer avant d'exécuter ce script."
+        exit 7 # Code d'erreur 7 pour absence de dépendance
+    fi
+}
+
+
 #fonction pour créer le fichier temporaire des données filtrer en fonction des cas
 filtrer_donnees() {
 
@@ -318,7 +326,7 @@ main() {
     preparer_dossiers         # Préparation des dossiers requis
     verifier_installer_gnuplot
     traitement_principal "$@" # Lancement du traitement principal
-    generer_lv_all_minmax()
+    generer_lv_all_minmax
     echo "Script terminé avec succès !"
      fin_temps=$(date +%s)
      execution_temps=$((fin_temps - debut_temps))
