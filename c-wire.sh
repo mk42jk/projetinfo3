@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #Fonction pour l'affichage de l'aide
 affiche_aide(){
      echo "Fonction d'aide exécutée."
@@ -80,7 +79,6 @@ validation_arguments() {
         exit 3 #Argument invalide
         ;;
 esac
-
 }
 
 # Fonction pour vérifier et préparer les dossiers requis
@@ -128,15 +126,15 @@ verifier_executable_c() {
     echo "Exécutable C vérifié et prêt."
 }
 
-verifier_installer_gnuplot() {
-    if ! command -v gnuplot &> /dev/null; then
+#Fonction qui vérifie si gnuplot est installé.
+verifier_installer_gnuplot(){
+if ! command -v gnuplot &> /dev/null; then
         echo "Erreur : Gnuplot n'est pas installé. Veuillez l'installer avant d'exécuter ce script."
         exit 7 # Code d'erreur 7 pour absence de dépendance
     fi
 }
 
-
-#fonction pour créer le fichier temporaire des données filtrer en fonction des cas
+#Fonction pour créer le fichier temporaire des données filtrer en fonction des cas
 filtrer_donnees() {
 
     local fichier_donnees="$1"
@@ -172,9 +170,9 @@ filtrer_donnees() {
     echo "  Type de station       : $type_station"
     echo "  Type de consommateur  : $type_consommateur"
     echo "  Identifiant de centrale        : ${id_centrale:-Aucun}"
-
+#Si les arguments sont "hvb comp".
 if [[ "$type_station" == "hvb" ]]; then
-        if [[ "$type_consommateur" == "comp" ]]; then
+        if [[ "$type_consommateur" == "comp" ]]; then 
             echo "Filtrage des données pour HVB avec consommateurs : 'comp'."
             if [[ -z "$id_centrale" ]]; then
                # Filtrer les lignes de capacité
@@ -199,7 +197,7 @@ if [[ "$type_station" == "hvb" ]]; then
             echo "Erreur : Type de consommateur '$type_consommateur' non valide pour 'hvb'."
             exit 3
         fi
-
+#Si les arguments sont "hva comp".
 elif [[ "$type_station" == "hva" ]]; then
         if [[ "$type_consommateur" == "comp" ]]; then
             echo "Filtrage des données pour HVA avec consommateurs : 'comp'."
@@ -226,7 +224,7 @@ elif [[ "$type_station" == "hva" ]]; then
             echo "Erreur : Type de consommateur '$type_consommateur' non valide pour 'hva'."
             exit 3
         fi
-
+#Si les arguments sont " lv comp".
 elif [[ "$type_station" == "lv" ]]; then
         case "$type_consommateur" in
             comp)
@@ -251,7 +249,7 @@ elif [[ "$type_station" == "lv" ]]; then
                     ' "$fichier_donnees" >> "$fichier_filtre" || { echo "Erreur lors du filtrage avec awk."; exit 9; }
                 fi
                 ;;
-            indiv)
+            indiv) #Si les arguments sont "lv indiv".
                 echo "Filtrage des données pour LV avec consommateurs : 'indiv'."
                 if [[ -z "$id_centrale" ]]; then
                     # Filtrer les lignes de capacité
@@ -273,7 +271,7 @@ elif [[ "$type_station" == "lv" ]]; then
                     ' "$fichier_donnees" >> "$fichier_filtre" || { echo "Erreur lors du filtrage avec awk."; exit 9; }
                 fi
                 ;;
-            all)
+            all) #Si les arguments sont "lv all".
                 echo "Filtrage des données pour LV avec consommateurs : 'all'."
                 if [[ -z "$id_centrale" ]]; then
                     # Filtrer les lignes de capacité
@@ -369,7 +367,6 @@ traitement_principal() {
             esac
             ;;
     esac
-
     # Déplacement du fichier de résultat vers le répertoire approprié et ajout de l'en-tête
     case "$type_de_station" in
         hvb)
@@ -407,7 +404,7 @@ traitement_principal() {
                     if [[ -n "$header" ]]; then
                         echo "$header" | cat - "tmp/lv_all.csv" > "tmp/lv_all_temp.csv" && mv "tmp/lv_all_temp.csv" "tmp/lv_all.csv"
                     fi
-                    generer_lv_all_minmax "tmp/lv_all.csv"
+                    generer_lv_all_minmax "tmp/lv_all.csv" #Génération de l'histogramme pour lv all
                     ;;
             esac
             ;;
@@ -443,7 +440,7 @@ generer_lv_all_minmax() {
     gnuplot <<-EOF
         set terminal png size 1200,800
         set output '${fichier_graphique}'
-        set title "Top 10 et Bottom 10 Stations LV"
+        set title "Les 10 centrales en marge et les 10 centrales en sous-production"
         set xlabel "Stations"
         set ylabel "Consommation (kWh)"
         set style data histograms
@@ -463,20 +460,16 @@ EOF
 }
 
 main() {
-     debut_temps=$(date +%s)
-    validation_arguments "$@" # On vérifie d'abord les arguments avant de lancer le script
-    preparer_dossiers         # Préparation des dossiers requis
-    verifier_installer_gnuplot
-    traitement_principal "$@" # Lancement du traitement principal
-    echo "Script terminé avec succès !"
-     fin_temps=$(date +%s)
-     execution_temps=$((fin_temps - debut_temps))
-     echo "Temps d'exécution du script shell : $execution_temps secondes."
+ debut_temps=$(date +%s)
+ validation_arguments "$@" # On vérifie d'abord les arguments avant de lancer le script
+ preparer_dossiers         # Préparation des dossiers requis
+ verifier_installer_gnuplot # On vérifie que gnuplot est installé
+ traitement_principal "$@" # Lancement du traitement principal
+ echo "Script terminé avec succès !"
+ fin_temps=$(date +%s)
+ execution_temps=$((fin_temps - debut_temps))
+ echo "Temps d'exécution du script shell : $execution_temps secondes."
 }
 
 #Point d'entrée dans le script 
 main "$@"
-
-
-
-    
