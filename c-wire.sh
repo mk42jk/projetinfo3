@@ -141,7 +141,7 @@ filtrer_donnees() {
     local fichier_donnees="$1"
     local type_station="$2"
     local type_consommateur="$3"
-    local ID_centrale="${4:-}"
+    local id_centrale="${4:-}"
     local fichier_filtre="tmp/filtered_data.csv"
 
  # Validation de l'argument 1 (Fichier_donnees) (juste au cas ou on le remet ici)
