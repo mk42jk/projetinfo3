@@ -10,20 +10,20 @@
 // Structure d'un nœud de l'arbre AVL
 typedef struct NoeudAVL {
     int id_station;        // Identifiant unique de la station
-    float capacite;       // Capacité de production de la station
-    float consommation;   // Consommation actuelle de la station
+    long capacite;       // Capacité de production de la station
+    long consommation;   // Consommation actuelle de la station
     int hauteur;          // Hauteur du nœud pour l'équilibrage
     struct NoeudAVL *gauche;  // Sous-arbre gauche
     struct NoeudAVL *droite;  // Sous-arbre droit
 } NoeudAVL;
 
 // Fonctions de gestion des nœuds
-NoeudAVL* creer_noeud(int id_station, double capacite);
+NoeudAVL* creer_noeud(int id_station, long capacite);
 void liberer_avl(NoeudAVL *racine);
 
 // Fonctions de recherche et mise à jour
 NoeudAVL* chercher_noeud(NoeudAVL *racine, int id_station);
-void maj_consommation(NoeudAVL *noeud, double consommation);
+void maj_consommation(NoeudAVL *noeud, long consommation);
 bool est_noeud_valide(const NoeudAVL *noeud);
 
 // Fonctions de gestion de l'équilibrage
@@ -38,6 +38,6 @@ NoeudAVL* rotation_droite(NoeudAVL *noeud);
 NoeudAVL* rotation_gauche(NoeudAVL *noeud);
 
 // Fonction d'insertion
-NoeudAVL* inserer_noeud(NoeudAVL *racine, int id_station, double capacite);
+NoeudAVL* inserer_noeud(NoeudAVL *racine, int id_station, long capacite);
 
 #endif

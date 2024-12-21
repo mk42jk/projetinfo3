@@ -58,15 +58,16 @@ NoeudAVL* rotation_gauche(NoeudAVL *x) {
 }
 
 // Crée un nouveau nœud AVL
-NoeudAVL* creer_noeud(int id_station, double capacite) {
+NoeudAVL* creer_noeud(int id_station, long capacite) {
     NoeudAVL* noeud = (NoeudAVL*)malloc(sizeof(NoeudAVL));
     if (!noeud) return NULL;
     
     noeud->id_station = id_station;
-    noeud->capacite = (float)capacite;
-    noeud->consommation = 0.0f;
+    noeud->capacite = capacite;
+    noeud->consommation = 0;
     noeud->hauteur = 1;
-    noeud->gauche = noeud->droite = NULL;
+    noeud->gauche = NULL;
+    noeud->droite = NULL;
     
     return noeud;
 }
@@ -80,13 +81,13 @@ void liberer_avl(NoeudAVL *racine) {
 }
 
 // Met à jour la consommation d'un nœud
-void maj_consommation(NoeudAVL *noeud, double consommation) {
+void maj_consommation(NoeudAVL *noeud, long consommation) {
     if (!noeud) return;
-    noeud->consommation += consommation;
+    noeud->consommation = consommation;
 }
 
 // Insère ou met à jour un nœud dans l'arbre
-NoeudAVL* inserer_noeud(NoeudAVL *racine, int id_station, double capacite) {
+NoeudAVL* inserer_noeud(NoeudAVL *racine, int id_station, long capacite) {
     // Insertion normale BST
     if (!racine)
         return creer_noeud(id_station, capacite);

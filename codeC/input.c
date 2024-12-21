@@ -16,20 +16,23 @@ static int traiter_ligne(char* ligne, NoeudAVL** racine) {
 
     char* elmt;
     int id_station;
-    float capacite, consommation;  // Changé en float pour correspondre à la structure
+    long capacite, consommation;  // Changé en long pour éviter les arrondis
     
     // Format attendu : "id_station:capacite:consommation"
     elmt = strtok(ligne, ":");
     if (!elmt) return ERREUR_LECTURE;
     id_station = atoi(elmt);
     
-    elmt = strtok(NULL, ":");
-    if (!elmt) return ERREUR_LECTURE;
-    capacite = (float)atof(elmt);  // Conversion explicite en float
+    // Ignorer les lignes qui ne commencent pas par un nombre
+    if (id_station == 0) return SUCCES;
     
     elmt = strtok(NULL, ":");
     if (!elmt) return ERREUR_LECTURE;
-    consommation = (float)atof(elmt);  // Conversion explicite en float
+    capacite = atol(elmt);  // Utilisation de atol au lieu de atof
+    
+    elmt = strtok(NULL, ":");
+    if (!elmt) return ERREUR_LECTURE;
+    consommation = atol(elmt);  // Utilisation de atol au lieu de atof
     
     // Validation des données
     if (capacite < 0 || consommation < 0) {
@@ -37,13 +40,19 @@ static int traiter_ligne(char* ligne, NoeudAVL** racine) {
     }
     
     // Mise à jour de l'AVL
-    *racine = inserer_noeud(*racine, id_station, capacite);
-    if (*racine == NULL) return ERREUR_MEMOIRE;
-    
-    // Mise à jour de la consommation
     NoeudAVL* noeud = chercher_noeud(*racine, id_station);
-    if (!noeud) return ERREUR_MEMOIRE;
-    maj_consommation(noeud, consommation);
+    if (noeud) {
+        // Si le noeud existe déjà, on ajoute la capacité et la consommation
+        noeud->capacite += capacite;
+        noeud->consommation += consommation;
+    } else {
+        // Sinon on crée un nouveau noeud
+        *racine = inserer_noeud(*racine, id_station, capacite);
+        if (*racine == NULL) return ERREUR_MEMOIRE;
+        noeud = chercher_noeud(*racine, id_station);
+        if (!noeud) return ERREUR_MEMOIRE;
+        noeud->consommation = consommation;
+    }
     
     return SUCCES;
 }

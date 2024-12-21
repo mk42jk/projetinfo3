@@ -14,10 +14,10 @@ static void ecrire_donnees_rec(FILE* f, const NoeudAVL* noeud, int* compte) {
     ecrire_donnees_rec(f, noeud->gauche, compte);
     
     // Écriture au format id_station:capacite:consommation
-    fprintf(f, "%d:%.2f:%.2f\n", 
+    fprintf(f, "%d:%ld:%ld\n", 
             noeud->id_station,
-            noeud->capacite,
-            noeud->consommation);
+            (long)noeud->capacite,
+            (long)noeud->consommation);
     
     (*compte)++;
     
