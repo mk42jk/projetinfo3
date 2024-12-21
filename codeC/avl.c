@@ -82,7 +82,7 @@ void liberer_avl(NoeudAVL *racine) {
 // Met à jour la consommation d'un nœud
 void maj_consommation(NoeudAVL *noeud, double consommation) {
     if (!noeud) return;
-    noeud->consommation = consommation;
+    noeud->consommation += consommation;
 }
 
 // Insère ou met à jour un nœud dans l'arbre
