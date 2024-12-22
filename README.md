@@ -1,3 +1,5 @@
+<h1 align="center">⚡ C-Wire ⚡</h1>
+
 ## Description du projet
 
 Ce projet est un programme Shell conçu pour traiter des fichiers de données de centrales électriques afin de déterminer si ces dernières sont en marge ou en surproduction.
