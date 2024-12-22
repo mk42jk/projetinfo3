@@ -259,6 +259,7 @@ Le programme gère les erreurs suivantes :
 
 2. **Graphique généré** :
    - `graphs/lv_minmax.png` : Histogramme représentant les 10 stations les plus et les moins chargées.
+   ![image](https://github.com/user-attachments/assets/4bbb16ad-c76b-47e3-8daf-7200f530e0a3)
 
 3. **Dans la console** :
    ![IMG-20241222-WA0009](https://github.com/user-attachments/assets/94442b0b-01ea-4fe9-863b-30229a35ef02)
