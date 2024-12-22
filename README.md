@@ -1,6 +1,6 @@
 <h1 align="center">⚡ C-Wire ⚡</h1>
 
-<p style="color:red;">Ceci est un texte rouge.</p>
+🔴 Ce readme doit absolument être lu sur le github et non au format téléchargé
 
 ## Description du projet
 
