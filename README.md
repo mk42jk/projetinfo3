@@ -61,6 +61,18 @@ Avant d'exécuter le programme, assurez-vous que votre environnement dispose des
 
 ---
 
+## Installation
+
+Suivez les étapes ci-dessous pour installer et configurer correctement le projet :
+
+1. **Cloner le dépôt** :  
+   Téléchargez ou clonez le projet dans votre environnement local :  
+   ```bash
+   git clone <url_du_depot>
+   cd <nom_du_dossier>
+
+   ---
+   
 ## Structure des Arguments
 
 Le programme accepte entre 3 et 4 arguments :
