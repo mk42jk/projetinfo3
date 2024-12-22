@@ -29,6 +29,53 @@ Ce projet est un programme Shell conçu pour traiter des fichiers de données de
 
 ---
 
+## Pré-requis
+
+Avant d'exécuter le programme, assurez-vous que votre environnement dispose des éléments suivants :
+
+1. **Système d'exploitation** :
+   - Linux ou macOS (Windows est supporté via WSL).
+
+2. **Logiciels nécessaires** :
+   - **Gnuplot** : Utilisé pour générer les graphiques.
+     - Pour installer Gnuplot :
+       - Sur Debian/Ubuntu : `sudo apt install gnuplot`
+       - Sur macOS : `brew install gnuplot`
+   - **Compilateur C (comme GCC)** : Utilisé pour compiler le programme C (`c-wire`).
+     - Pour installer GCC :
+       - Sur Debian/Ubuntu : `sudo apt install gcc`
+       - Sur macOS : `brew install gcc`
+   - **Make** : Nécessaire pour compiler avec le Makefile.
+     - Pour installer Make :
+       - Sur Debian/Ubuntu : `sudo apt install make`
+       - Sur macOS : `brew install make`
+
+3. **Permissions** :
+   - Le script Shell (`c-wire.sh`) doit avoir les permissions d'exécution :
+     ```bash
+     chmod +x c-wire.sh
+     ```
+
+4. **Fichiers de données** :
+   - Les fichiers d'entrée doivent être au format CSV avec des colonnes séparées par des points-virgules.
+
+---
+
+## Structure des Arguments
+
+Le programme accepte entre 3 et 4 arguments :
+
+1. **Fichier d'entrée** : Chemin vers un fichier CSV contenant les données.
+2. **Type de station** : `hvb`, `hva`, ou `lv`.
+3. **Type de consommateur** : `comp`, `indiv`, ou `all`.
+4. **Identifiant de centrale** *(optionnel)* : Une valeur numérique entre 1 et 5.
+
+### Combinaisons interdites :
+- `hvb` avec `all` ou `indiv`
+- `hva` avec `all` ou `indiv`
+
+---
+
 ## Structure des Arguments
 
 Le programme accepte entre 3 et 4 arguments :
