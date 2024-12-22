@@ -74,7 +74,7 @@ Suivez les étapes ci-dessous pour installer et configurer correctement le proje
 2. Naviguer jusqu'au projet
    Accédez au répertoire CodeC où se trouve le programme C (c-wire) :
 ```bash
-cd projetinfo3-main
+cd codeC
 ```
 Compilez le programme C en utilisant la commande make :
 ```bash
@@ -86,7 +86,7 @@ cd -
 ```
 Nettoyage des fichiers compilés :
 ```bash
-cd projetinfo3-main
+cd codeC
 make clean
 make
 cd -
