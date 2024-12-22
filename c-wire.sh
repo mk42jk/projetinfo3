@@ -6,7 +6,8 @@ affiche_aide(){
      echo 
      echo "L'utilisation: $0 <Fichier_Données> <Type_de_station> <type_de_consommateur> [id_centrale] [-h]"
      echo
-     echo "Options:" #une ligne pour expliquer chaque argument 
+     echo "Options:" #une ligne pour expliquer chaque argument
+     echo
      echo "Fichier_Données: Chemin vers le ficher des données CSV (Obligatoire)"
      echo "Type_de_station: Type de station (hvb, hva, lv) (Obligatoire)"
      echo "type_de_consommateur: Type de consommateur (comp, indiv, all) (Obligatoire)"
