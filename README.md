@@ -70,6 +70,28 @@ Suivez les étapes ci-dessous pour installer et configurer correctement le proje
    ```bash
    git clone <https://github.com/mk42jk/projetinfo3>
    cd <projetinfo3-main>
+   ```
+2. **Naviguer jusqu'au projet
+   Accédez au répertoire CodeC où se trouve le programme C (c-wire) :
+```bash
+Copy code
+cd CodeC
+```
+Compilez le programme C en utilisant la commande make :
+```bash
+Copy code
+cd CodeC
+```
+Accédez au répertoire CodeC où se trouve le programme C (c-wire) :
+```bash
+Copy code
+cd CodeC
+```
+Accédez au répertoire CodeC où se trouve le programme C (c-wire) :
+```bash
+Copy code
+cd CodeC
+```
    
 ## Structure des Arguments
 
