@@ -88,7 +88,6 @@ cd -
 ```bash
 cd codeC
 make clean
-make
 cd -
 ```
    
