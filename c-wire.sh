@@ -438,14 +438,15 @@ generer_lv_all_minmax() {
     gnuplot <<-EOF
         set terminal png size 1200,800
         set output '${fichier_graphique}'
-        set title "Les 10 centrales en marge et les 10 centrales en sous-production"
-        set xlabel "Stations"
-        set ylabel "Consommation (kWh)"
+        set title "Les 10 centrales en marge et les 10 centrales en sous-production" 
+        set xlabel "Stations" 
+        set ylabel "Consommation (kWh)" 
         set style data histograms
-        set style fill solid
+        set style fill solid 1.0 border linecolor rgb "black"
         set boxwidth 0.8
         set grid ytics
         set datafile separator ':'
+        set xtics rotate by 45 right
 
         plot '${fichier_minmax}' using 2:xtic(1) title "Capacité" lc rgb "green", \
              '' using 3 title "Consommation" lc rgb "red"
