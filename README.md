@@ -88,6 +88,7 @@ Nettoyage des fichiers compilés :
 ```bash
 cd CodeC
 make clean
+make
 cd -
 ```
    
