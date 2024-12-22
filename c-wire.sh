@@ -3,7 +3,9 @@
 #Fonction pour l'affichage de l'aide
 affiche_aide(){
      echo "====== C-WIRE AIDE ========"
+     echo 
      echo "L'utilisation: $0 <Fichier_Données> <Type_de_station> <type_de_consommateur> [id_centrale] [-h]"
+     echo
      echo "Options:" #une ligne pour expliquer chaque argument 
      echo "Fichier_Données: Chemin vers le ficher des données CSV (Obligatoire)"
      echo "Type_de_station: Type de station (hvb, hva, lv) (Obligatoire)"
@@ -171,7 +173,7 @@ filtrer_donnees() {
     echo "Filtrage des données pour :"
     echo "  Type de station       : $type_station"
     echo "  Type de consommateur  : $type_consommateur"
-    echo "  Identifiant de centrale  : ${id_centrale:-Aucun}"
+    echo "  Identifiant de centrale        : ${id_centrale:-Aucun}"
     
 #Si les arguments sont "hvb comp".
 if [[ "$type_station" == "hvb" ]]; then
@@ -389,6 +391,19 @@ traitement_principal() {
         echo "$header" | cat - "$fichier_sortie" > "tmp/header_temp.csv" \
         && mv "tmp/header_temp.csv" "$fichier_sortie"
     fi
+
+    #Extraction de l'en-tête
+head -n 1 "$fichier_sortie" > tmp/header_temp.csv
+
+# Extraction du reste (sans la ligne d'en-tête) + tri sur la 2ᵉ colonne numériquement
+tail -n +2 "$fichier_sortie" \
+  | sort -t':' -k2,2n > tmp/data_sorted.csv
+
+# Reconstruction du fichier final
+cat tmp/header_temp.csv tmp/data_sorted.csv > "$fichier_sortie"
+
+# Nettoyage des temporaires
+rm -f tmp/header_temp.csv tmp/data_sorted.csv
 
     # Enfin, si on est en lv all, on génère le fichier minmax dans 'tests/'
     if [[ "$type_de_station" == "lv" && "$type_consommateur" == "all" ]]; then
