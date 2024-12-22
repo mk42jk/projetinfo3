@@ -1,4 +1,5 @@
-<h1 align="center">⚡ C-Wire ⚡</h1>
+<h1 align="center" style="font-size: 50px;">⚡ C-Wire ⚡</h1>
+
 
 ## Description du projet
 
