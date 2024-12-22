@@ -1,6 +1,5 @@
 <h1 align="center">⚡ C-Wire ⚡</h1>
 
-<p style="color: red;">Ceci est un texte rouge.</p>
 
 ## Description du projet
 
