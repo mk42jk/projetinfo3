@@ -69,7 +69,7 @@ Suivez les étapes ci-dessous pour installer et configurer correctement le proje
    Téléchargez ou clonez le projet dans votre environnement local :  
    ```bash
    git clone <https://github.com/mk42jk/projetinfo3>
-   cd <c-wire>
+   cd <projetinfo3-main>
    
 ## Structure des Arguments
 
