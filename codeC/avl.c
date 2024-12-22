@@ -30,44 +30,43 @@ void maj_hauteur(NoeudAVL *noeud) {
 NoeudAVL* rotation_droite(NoeudAVL *y) {
     if (!y || !y->gauche) return y;
     
-    NoeudAVL *p = y->gauche;
-    NoeudAVL *z = p->droite;
+    NoeudAVL *x = y->gauche;
+    NoeudAVL *T2 = x->droite;
 
-    p->droite = y;
-    y->gauche = z;
+    x->droite = y;
+    y->gauche = T2;
 
     maj_hauteur(y);
-    maj_hauteur(p);
+    maj_hauteur(x);
 
-    return p;
+    return x;
 }
 
 NoeudAVL* rotation_gauche(NoeudAVL *x) {
     if (!x || !x->droite) return x;
     
-    NoeudAVL *p = x->droite;
-    NoeudAVL *z = p->gauche;
+    NoeudAVL *y = x->droite;
+    NoeudAVL *T2 = y->gauche;
 
-    p->gauche = x;
-    x->droite = z;
+    y->gauche = x;
+    x->droite = T2;
 
     maj_hauteur(x);
-    maj_hauteur(p);
+    maj_hauteur(y);
 
-    return p;
+    return y;
 }
 
 // Crée un nouveau nœud AVL
-NoeudAVL* creer_noeud(int id_station, long capacite) {
+NoeudAVL* creer_noeud(int id_station, double capacite) {
     NoeudAVL* noeud = (NoeudAVL*)malloc(sizeof(NoeudAVL));
     if (!noeud) return NULL;
     
     noeud->id_station = id_station;
     noeud->capacite = capacite;
-    noeud->consommation = 0;
+    noeud->consommation = 0.0f;
     noeud->hauteur = 1;
-    noeud->gauche = NULL;
-    noeud->droite = NULL;
+    noeud->gauche = noeud->droite = NULL;
     
     return noeud;
 }
@@ -81,20 +80,22 @@ void liberer_avl(NoeudAVL *racine) {
 }
 
 // Met à jour la consommation d'un nœud
-void maj_consommation(NoeudAVL *noeud, long consommation) {
+void maj_consommation(NoeudAVL *noeud, double consommation) {
     if (!noeud) return;
-    noeud->consommation = consommation;
+    noeud->consommation += consommation;
 }
 
 // Insère ou met à jour un nœud dans l'arbre
-NoeudAVL* inserer_noeud(NoeudAVL *racine, int id_station, long capacite) {
+NoeudAVL* inserer_noeud(NoeudAVL *racine, int id_station, double capacite) {
     // Insertion normale BST
     if (!racine)
         return creer_noeud(id_station, capacite);
 
     // Mise à jour si le nœud existe déjà
     if (id_station == racine->id_station) {
-        racine->capacite = capacite;
+        if (capacite > 0) {  // Ne mettre à jour que si capacite > 0
+            racine->capacite = capacite;
+        }
         return racine;
     }
 
