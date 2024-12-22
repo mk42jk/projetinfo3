@@ -16,44 +16,39 @@ static int traiter_ligne(char* ligne, NoeudAVL** racine) {
 
     char* elmt;
     int id_station;
-    long capacite, consommation;  // Changé en long pour éviter les arrondis
+    long capacite, consommation;  // Changé en long pour correspondre à la structure
     
     // Format attendu : "id_station:capacite:consommation"
     elmt = strtok(ligne, ":");
     if (!elmt) return ERREUR_LECTURE;
     id_station = atoi(elmt);
     
-    // Ignorer les lignes qui ne commencent pas par un nombre
-    if (id_station == 0) return SUCCES;
+    elmt = strtok(NULL, ":");
+    if (!elmt) return ERREUR_LECTURE;
+    capacite = atol(elmt);  // Conversion explicite en long
     
     elmt = strtok(NULL, ":");
     if (!elmt) return ERREUR_LECTURE;
-    capacite = atol(elmt);  // Utilisation de atol au lieu de atof
-    
-    elmt = strtok(NULL, ":");
-    if (!elmt) return ERREUR_LECTURE;
-    consommation = atol(elmt);  // Utilisation de atol au lieu de atof
+    consommation = atol(elmt);  // Conversion explicite en long
     
     // Validation des données
     if (capacite < 0 || consommation < 0) {
         return ERREUR_DONNEES;
     }
     
-    // Mise à jour de l'AVL
-    NoeudAVL* noeud = chercher_noeud(*racine, id_station);
-    if (noeud) {
-        // Si le noeud existe déjà, on ajoute la capacité et la consommation
-        noeud->capacite += capacite;
-        noeud->consommation += consommation;
-    } else {
-        // Sinon on crée un nouveau noeud
+    // Mise à jour de l'AVL uniquement si capacite > 0
+    if (capacite > 0) {
         *racine = inserer_noeud(*racine, id_station, capacite);
         if (*racine == NULL) return ERREUR_MEMOIRE;
-        noeud = chercher_noeud(*racine, id_station);
-        if (!noeud) return ERREUR_MEMOIRE;
-        noeud->consommation = consommation;
     }
     
+   // Mise à jour de la consommation uniquement si consommation > 0
+    if (consommation > 0) {
+        NoeudAVL* noeud = chercher_noeud(*racine, id_station);
+        if (!noeud) return ERREUR_MEMOIRE;
+        maj_consommation(noeud, consommation);
+    }
+
     return SUCCES;
 }
 
