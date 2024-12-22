@@ -83,8 +83,10 @@ cd -
      ```bash
      chmod +x c-wire.sh
      ```
+4. **Execution**
+   -Voir dans la section "Utilisation plus bas"
    
-4. **Nettoyage des fichiers compilés** :
+5. **Nettoyage des fichiers compilés** :
 ```bash
 cd codeC
 make clean
