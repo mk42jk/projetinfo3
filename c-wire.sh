@@ -1,8 +1,16 @@
 #!/bin/bash
 
+###############################################################################
+# Script c-wire.sh
+# Auteur : Konda-Mougnongui Jérémie, Lkhluf Maryam, Boucham Jibril
+# Description : Script principal pour filtrer les données CSV et exécuter
+#               un programme C afin de générer des rapports sur la distribution
+#               d'énergie.
+###############################################################################
+
 #Fonction pour l'affichage de l'aide
 affiche_aide(){
-     echo "Fonction d'aide exécutée."
+     echo "====== C-WIRE AIDE ========"
      echo "L'utilisation: $0 <Fichier_Données> <Type_de_station> <type_de_consommateur> [id_centrale] [-h]"
      echo "Options:" #une ligne pour expliquer chaque argument 
      echo "Fichier_Données: Chemin vers le ficher des données CSV (Obligatoire)"
@@ -68,7 +76,7 @@ validation_arguments() {
             exit 3 #Argument invalide
         fi
         #hva_all ou hva_indiv pas possible également
-        if [[ "$type_de_station" == "hva" && ( "$type_consommateur" == "all" || "$type_de_consommateur" == "indiv" ) ]]; then
+        if [[ "$type_de_station" == "hva" && ( "$type_de_consommateur" == "all" || "$type_de_consommateur" == "indiv" ) ]]; then
             echo "Erreur : Le type de consommateur 'all ou indiv' n'est pas autorisé pour le type de station 'hva'."
             affiche_aide
             exit 3 #Argument invalide
@@ -85,7 +93,7 @@ esac
 # Fonction pour vérifier et préparer les dossiers requis
 preparer_dossiers() {
     # Vérification et création des dossiers
-    for dossier in "tmp" "graphs"; do
+    for dossier in "tmp" "graphs" "tests"; do
         if [[ ! -d "$dossier" ]]; then
             echo "Création du dossier '$dossier'..."
             mkdir -p "$dossier"
@@ -94,6 +102,7 @@ preparer_dossiers() {
                 exit 4 # Code 4 : Erreur de permission pour la création de dossier
             fi
         else
+            #Si c'est le dossier tmp, on le vide :
             if [[ "$dossier" == "tmp" ]]; then
                 echo "Nettoyage du dossier '$dossier'..."
                 rm -rf "$dossier"/*
@@ -369,60 +378,41 @@ traitement_principal() {
             esac
             ;;
     esac
-    # Déplacement du fichier de résultat vers le répertoire approprié et ajout de l'en-tête
-    case "$type_de_station" in
-        hvb)
-            if [[ "$type_consommateur" == "comp" ]]; then
-                mv "$fichier_resultat" "tmp/hvb_comp.csv" || { echo "Erreur lors du déplacement du fichier pour hvb comp."; exit 11; }
-                if [[ -n "$header" ]]; then
-                    echo "$header" | cat - "tmp/hvb_comp.csv" > "tmp/hvb_comp_temp.csv" && mv "tmp/hvb_comp_temp.csv" "tmp/hvb_comp.csv"
-                fi
-            fi
-            ;;
-        hva)
-            if [[ "$type_consommateur" == "comp" ]]; then
-                mv "$fichier_resultat" "tmp/hva_comp.csv" || { echo "Erreur lors du déplacement du fichier pour hva comp."; exit 11; }
-                if [[ -n "$header" ]]; then
-                    echo "$header" | cat - "tmp/hva_comp.csv" > "tmp/hva_comp_temp.csv" && mv "tmp/hva_comp_temp.csv" "tmp/hva_comp.csv"
-                fi
-            fi
-            ;;
-        lv)
-            case "$type_consommateur" in
-                comp)
-                    mv "$fichier_resultat" "tmp/lv_comp.csv" || { echo "Erreur lors du déplacement du fichier pour lv comp."; exit 11; }
-                    if [[ -n "$header" ]]; then
-                        echo "$header" | cat - "tmp/lv_comp.csv" > "tmp/lv_comp_temp.csv" && mv "tmp/lv_comp_temp.csv" "tmp/lv_comp.csv"
-                    fi
-                    ;;
-                indiv)
-                    mv "$fichier_resultat" "tmp/lv_indiv.csv" || { echo "Erreur lors du déplacement du fichier pour lv indiv."; exit 11; }
-                    if [[ -n "$header" ]]; then
-                        echo "$header" | cat - "tmp/lv_indiv.csv" > "tmp/lv_indiv_temp.csv" && mv "tmp/lv_indiv_temp.csv" "tmp/lv_indiv.csv"
-                    fi
-                    ;;
-                all)
-                    mv "$fichier_resultat" "tmp/lv_all.csv" || { echo "Erreur lors du déplacement du fichier pour lv all."; exit 11; }
-                    if [[ -n "$header" ]]; then
-                        echo "$header" | cat - "tmp/lv_all.csv" > "tmp/lv_all_temp.csv" && mv "tmp/lv_all_temp.csv" "tmp/lv_all.csv"
-                    fi
-                    generer_lv_all_minmax "tmp/lv_all.csv" #Génération de l'histogramme pour lv all
-                    ;;
-            esac
-            ;;
-    esac
+
+    # On construit le nom du fichier final dans tests/
+    local fichier_sortie="tests/${type_de_station}_${type_consommateur}.csv"
+    if [[ -n "$id_centrale" ]]; then
+        fichier_sortie="tests/${type_de_station}_${type_consommateur}_${id_centrale}.csv"
+    fi
+
+    # On déplace maintenant le résultat
+    mv "$fichier_resultat" "$fichier_sortie" || {
+        echo "Erreur lors du déplacement du fichier de résultat vers '$fichier_sortie'."
+        exit 11
+    }
+
+    # On insère notre en-tête tout en conservant le contenu trié
+    # Astuce: on place l'en-tête au-dessus du fichier existant
+    if [[ -n "$header" ]]; then
+        echo "$header" | cat - "$fichier_sortie" > "tmp/header_temp.csv" \
+        && mv "tmp/header_temp.csv" "$fichier_sortie"
+    fi
+
+    # Enfin, si on est en lv all, on génère le fichier minmax dans 'tests/'
+    if [[ "$type_de_station" == "lv" && "$type_consommateur" == "all" ]]; then
+        generer_lv_all_minmax "$fichier_sortie"
+    fi
 }
 
 generer_lv_all_minmax() {
     local fichier_input="$1"  # "tmp/lv_all.csv"
-    local fichier_minmax="tmp/lv_all_minmax.csv"
+    local fichier_minmax="tests/lv_all_minmax.csv"
     local fichier_graphique="graphs/lv_minmax.png"
 
     echo "Station:Capacité:Consommation:Différence" > "$fichier_minmax"
 
     awk -F':' '
         NR > 1 {
-            # Calculer la différence absolue entre consommation et capacité
             diff = $3 - $2
             if (diff < 0) diff = -diff
             print $1 ":" $2 ":" $3 ":" diff
@@ -457,7 +447,7 @@ EOF
     echo "Graphique généré : $fichier_graphique."
 
     # Nettoyage du fichier temporaire
-    rm -f tmp/sorted_data.csv tmp/sorted_data_unique.csv
+    rm -f tmp/sorted_data_unique.csv
 }
 
 main() {
