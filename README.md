@@ -101,7 +101,7 @@ Le programme accepte entre 3 et 4 arguments :
 
 ---
 
-### Exemple de fichier CSV
+### Exemple du format CSV attendu
 
 ```csv
 Power plant;HV-B Station;HV-A Station;LV Station;Company;Individual;Capacity;Load
