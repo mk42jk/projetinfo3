@@ -57,7 +57,7 @@ Avant d'exécuter le programme, assurez-vous que votre environnement dispose des
 
 ---
 
-## Installation
+## Installation et execution
 
 Suivez les étapes ci-dessous pour installer et configurer correctement le projet :
 
