@@ -171,11 +171,6 @@ Power plant;HV-B Station;HV-A Station;LV Station;Company;Individual;Capacity;Loa
    ```bash
    ./c-wire.sh input/data.csv lv all 2
    ```
-   ```bash
-   ![Texte alternatif de l'image](Téléchargements/IMG-20241222-WA0009.jpg)
-   ```
-   
-
 ---
 
 ## Détails des Fonctions
