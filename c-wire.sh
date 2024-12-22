@@ -1,13 +1,5 @@
 #!/bin/bash
 
-###############################################################################
-# Script c-wire.sh
-# Auteur : Konda-Mougnongui Jérémie, Lkhluf Maryam, Boucham Jibril
-# Description : Script principal pour filtrer les données CSV et exécuter
-#               un programme C afin de générer des rapports sur la distribution
-#               d'énergie.
-###############################################################################
-
 #Fonction pour l'affichage de l'aide
 affiche_aide(){
      echo "====== C-WIRE AIDE ========"
