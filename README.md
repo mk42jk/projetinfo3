@@ -68,8 +68,8 @@ Suivez les étapes ci-dessous pour installer et configurer correctement le proje
 1. **Cloner le dépôt** :  
    Téléchargez ou clonez le projet dans votre environnement local :  
    ```bash
-   git clone <[url_du_depot](https://github.com/mk42jk/projetinfo3)>
-   cd <nom_du_dossier>
+   git clone <https://github.com/mk42jk/projetinfo3>
+   cd <c-wire>
 
    ---
    
