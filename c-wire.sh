@@ -239,7 +239,7 @@ elif [[ "$type_station" == "lv" ]]; then
 
                     # Filtrer les lignes de consommation (entreprises)
                     awk -F';' '
-                        $4 != "-" && $5 != "-" && $7 != "-" { print $4 ":0:" $8 }
+                        $4 != "-" && $5 != "-" && $7 == "-" { print $4 ":0:" $8 }
                     ' "$fichier_donnees" >> "$fichier_filtre" || { echo "Erreur lors du filtrage avec awk."; exit 9; }
                 else
                     awk -F';' -v id="$id_centrale" '
@@ -247,7 +247,7 @@ elif [[ "$type_station" == "lv" ]]; then
                     ' "$fichier_donnees" >> "$fichier_filtre" || { echo "Erreur lors du filtrage avec awk."; exit 9; }
 
                     awk -F';' -v id="$id_centrale" '
-                        $1 == id && $4 != "-" && $5 != "-" && $7 != "-" { print $4 ":0:" $8 }
+                        $1 == id && $4 != "-" && $5 != "-" && $7 == "-" { print $4 ":0:" $8 }
                     ' "$fichier_donnees" >> "$fichier_filtre" || { echo "Erreur lors du filtrage avec awk."; exit 9; }
                 fi
                 ;;
@@ -261,7 +261,7 @@ elif [[ "$type_station" == "lv" ]]; then
 
                     # Filtrer les lignes de consommation (particuliers)
                     awk -F';' '
-                        $4 != "-" && $6 != "-" && $7 != "-" { print $4 ":0:" $8 }
+                        $4 != "-" && $6 != "-" && $7 == "-" { print $4 ":0:" $8 }
                     ' "$fichier_donnees" >> "$fichier_filtre" || { echo "Erreur lors du filtrage avec awk."; exit 9; }
                 else
                     awk -F';' -v id="$id_centrale" '
@@ -269,7 +269,7 @@ elif [[ "$type_station" == "lv" ]]; then
                     ' "$fichier_donnees" >> "$fichier_filtre" || { echo "Erreur lors du filtrage avec awk."; exit 9; }
 
                     awk -F';' -v id="$id_centrale" '
-                        $1 == id && $4 != "-" && $6 != "-" && $7 != "-" { print $4 ":0:" $8 }
+                        $1 == id && $4 != "-" && $6 != "-" && $7 == "-" { print $4 ":0:" $8 }
                     ' "$fichier_donnees" >> "$fichier_filtre" || { echo "Erreur lors du filtrage avec awk."; exit 9; }
                 fi
                 ;;
@@ -283,12 +283,12 @@ elif [[ "$type_station" == "lv" ]]; then
 
                     # Filtrer les lignes de consommation (entreprises)
                     awk -F';' '
-                        $4 != "-" && $5 != "-" && $7 != "-" { print $4 ":0:" $8 }
+                        $4 != "-" && $5 != "-" && $7 == "-" { print $4 ":0:" $8 }
                     ' "$fichier_donnees" >> "$fichier_filtre" || { echo "Erreur lors du filtrage avec awk."; exit 9; }
 
                     # Filtrer les lignes de consommation (particuliers)
                     awk -F';' '
-                        $4 != "-" && $6 != "-" && $7 != "-" { print $4 ":0:" $8 }
+                        $4 != "-" && $6 != "-" && $7 == "-" { print $4 ":0:" $8 }
                     ' "$fichier_donnees" >> "$fichier_filtre" || { echo "Erreur lors du filtrage avec awk."; exit 9; }
                 else
                     awk -F';' -v id="$id_centrale" '
@@ -296,11 +296,11 @@ elif [[ "$type_station" == "lv" ]]; then
                     ' "$fichier_donnees" >> "$fichier_filtre" || { echo "Erreur lors du filtrage avec awk."; exit 9; }
 
                     awk -F';' -v id="$id_centrale" '
-                        $1 == id && $4 != "-" && $5 != "-" && $7 != "-" { print $4 ":0:" $8 }
+                        $1 == id && $4 != "-" && $5 != "-" && $7 == "-" { print $4 ":0:" $8 }
                     ' "$fichier_donnees" >> "$fichier_filtre" || { echo "Erreur lors du filtrage avec awk."; exit 9; }
 
                     awk -F';' -v id="$id_centrale" '
-                        $1 == id && $4 != "-" && $6 != "-" && $7 != "-" { print $4 ":0:" $8 }
+                        $1 == id && $4 != "-" && $6 != "-" && $7 == "-" { print $4 ":0:" $8 }
                     ' "$fichier_donnees" >> "$fichier_filtre" || { echo "Erreur lors du filtrage avec awk."; exit 9; }
                 fi
 
