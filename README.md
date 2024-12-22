@@ -90,8 +90,6 @@ cd CodeC
 make clean
 cd -
 ```
-
-![Texte alternatif de l'image](Téléchargements/IMG-20241222-WA0009.jpg)
    
 ## Structure des Arguments
 
@@ -259,3 +257,7 @@ Le programme gère les erreurs suivantes :
 
 2. **Graphique généré** :
    - `graphs/lv_minmax.png` : Histogramme représentant les 10 stations les plus et les moins chargées.
+
+3. **Dans la console** :
+   ![IMG-20241222-WA0009](https://github.com/user-attachments/assets/94442b0b-01ea-4fe9-863b-30229a35ef02)
+
