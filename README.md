@@ -50,13 +50,7 @@ Avant d'exécuter le programme, assurez-vous que votre environnement dispose des
        - Sur Debian/Ubuntu : `sudo apt install make`
        - Sur macOS : `brew install make`
 
-3. **Permissions** :
-   - Le script Shell (`c-wire.sh`) doit avoir les permissions d'exécution :
-     ```bash
-     chmod +x c-wire.sh
-     ```
-
-4. **Fichiers de données** :
+3. **Fichiers de données** :
    - Les fichiers d'entrée doivent être au format CSV avec des colonnes séparées par des points-virgules.
 
 ---
@@ -71,7 +65,7 @@ Suivez les étapes ci-dessous pour installer et configurer correctement le proje
    git clone <https://github.com/mk42jk/projetinfo3>
    cd <projetinfo3-main>
    ```
-2. Naviguer jusqu'au projet
+2. **Naviguer jusqu'au projet** :
    Accédez au répertoire CodeC où se trouve le programme C (c-wire) :
 ```bash
 cd codeC
@@ -84,7 +78,13 @@ Retour au répertoire principal :
 ```bash
 cd -
 ```
-Nettoyage des fichiers compilés :
+3. **Permissions** :
+   - Le script Shell (`c-wire.sh`) doit avoir les permissions d'exécution :
+     ```bash
+     chmod +x c-wire.sh
+     ```
+   
+4. **Nettoyage des fichiers compilés** :
 ```bash
 cd codeC
 make clean
