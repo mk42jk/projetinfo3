@@ -90,6 +90,8 @@ cd CodeC
 make clean
 cd -
 ```
+
+![Texte alternatif de l'image](Téléchargements/IMG-20241222-WA0009.jpg)
    
 ## Structure des Arguments
 
