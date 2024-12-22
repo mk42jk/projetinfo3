@@ -70,8 +70,6 @@ Suivez les étapes ci-dessous pour installer et configurer correctement le proje
    ```bash
    git clone <https://github.com/mk42jk/projetinfo3>
    cd <c-wire>
-
-
    
 ## Structure des Arguments
 
