@@ -18,12 +18,12 @@ typedef struct NoeudAVL {
 } NoeudAVL;
 
 // Fonctions de gestion des nœuds
-NoeudAVL* creer_noeud(int id_station, long capacite);
+NoeudAVL* creer_noeud(int id_station, double capacite);
 void liberer_avl(NoeudAVL *racine);
 
 // Fonctions de recherche et mise à jour
 NoeudAVL* chercher_noeud(NoeudAVL *racine, int id_station);
-void maj_consommation(NoeudAVL *noeud, long consommation);
+void maj_consommation(NoeudAVL *noeud, double consommation);
 bool est_noeud_valide(const NoeudAVL *noeud);
 
 // Fonctions de gestion de l'équilibrage
@@ -38,6 +38,6 @@ NoeudAVL* rotation_droite(NoeudAVL *noeud);
 NoeudAVL* rotation_gauche(NoeudAVL *noeud);
 
 // Fonction d'insertion
-NoeudAVL* inserer_noeud(NoeudAVL *racine, int id_station, long capacite);
+NoeudAVL* inserer_noeud(NoeudAVL *racine, int id_station, double capacite);
 
 #endif
